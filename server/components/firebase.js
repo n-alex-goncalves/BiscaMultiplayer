@@ -1,51 +1,37 @@
-import { createDeck, Draw } from './api'
-
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBLnRq_BL1wEskw4-awuhd6wFm_DqKldys",
-  authDomain: "bisca-multiplayer-game.firebaseapp.com",
-  databaseURL: "https://bisca-multiplayer-game-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "bisca-multiplayer-game",
-  storageBucket: "bisca-multiplayer-game.appspot.com",
-  messagingSenderId: "506134446756",
-  appId: "1:506134446756:web:9dfc23b96fe7754012dc31"
-};
+const express               = require('express');
+const http                  = require('http');
+const cors                  = require('cors');
+const { createDeck, Draw }  = require('./api.js');
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = express();
+app.use(cors()); // fix this afterwards
+const server = http.createServer(app);
 
-(function () {
+const port = 3001
 
-  let playerId;
-  let playerRef;
+/*
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
 
-  firebase.auth().onAuthStateChanged((user) => {
-    console.log(user);
-    if (user) {
-      //You're logged in.
-      playerId = user.id;
-      playerRef = firebase.database().ref(`players/${playerId}`)
-      playerRef.set({
-        name: "DREW"
-      })
-    } else {
-      //You're logged out.
-    }
-  })
-  
-  // attempts to login the client
-  firebase.auth().signInAnonymously().catch((error) => {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    console.log(errorCode, errorMessage);
-  });
-})();
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
 
+app.post('/startGame', async (req, res) => {
+  // player1Cards and player2Cards
+  const fbDeck = await createDeck();
+  const data = await Draw(fbDeck.deck_id, 3);
+  res.send({  deck_id: fbDeck.deck_id, 
+              cards: data.cardResponse.cards });
+});
+*/
+
+/*
 // Define an API endpoint that updates the game state in Firebase
 app.post('/updateGameState', (req, res) => {
   const { player1hand, player2hand } = req.body; // Get the new game state from the request body
@@ -76,38 +62,22 @@ app.post('/updateGameState', (req, res) => {
   res.send('Game state updated successfully');
 });
 
-app.post('/startGame', (res) => {
-  // player1Cards and player2Cards
-  const fbDeck = createDeck()
-  const trumpCard = Draw(fbDeck, 1);
-  const player1Cards = Draw(fbDeck, 3);
-  const player2Cards = Draw(fbDeck, 3);
-
-  const gameId = database.ref('games').push({
-    trumpCard: trumpCard,
-    player1Cards: player1Cards,
-    player2Cards: player2Cards
-  }).key;
-
-  res.send({ gameId: gameId });
-});
-
 app.get('/getPlayerCards/:gameId', (req, res) => {
   const gameId = req.params.gameId;
+  const gameData = snapshot.val();
+  const player1Cards = gameData.player1Cards;
+  res.send({ player1Cards: player1Cards });
+});
+*/
 
-  /*
+/*
   if player1 == req:
     const player1Cards = gameData.player1Cards;
     res.send({ player1Cards: player1Cards });
   else
     const player2Cards = gameData.player2Cards;
     res.send({ player2Cards: player2Cards });
-  */
-
-  const gameData = snapshot.val();
-  const player1Cards = gameData.player1Cards;
-  res.send({ player1Cards: player1Cards });
-});
+*/
 
 
 /*

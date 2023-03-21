@@ -1,13 +1,10 @@
-import axios from 'axios';
+const axios = require("axios");
 
 const api = axios.create({
     baseURL: 'https://deckofcardsapi.com/api/deck/'
 })
 
-// create a Deck and draw three cards
-
-
-// create a Deck and return Deck?
+// create a Deck and return Deck
 const createDeck = async () => {
     const { data } = await api.get('new/shuffle/', {
         params: {
@@ -20,7 +17,7 @@ const createDeck = async () => {
     return { deck_id };
 };
 
-// Draw a card from a deck
+// Draw a specified number of card from a deck
 const Draw = async (deck_id, count) => {
     const { data: cardResponse }  = await api.get(`${deck_id}/draw/`, {
         params: {
@@ -30,5 +27,4 @@ const Draw = async (deck_id, count) => {
     return { cardResponse };
 };
 
-
-export { createDeck, Draw };
+module.exports = { createDeck, Draw }

@@ -10,12 +10,13 @@ class CardGameBoard extends React.Component {
     }
     componentDidMount = async () => {
         // Call the API endpoint to start the game and get the deck ID
-        // const response = await fetch('http://localhost:3000/startGame', {method: 'POST',});
-        // const data = await response.json();
+        console.log('hello')
+        const response = await fetch('http://localhost:3001/startGame', {method: 'POST'});
+        const data = await response.json();
         this.setState({ 
-            card1ImageUrl: 'https://deckofcardsapi.com/static/img/back.png',
-            //card2ImageUrl: data.card2ImageUrl,
-            /* card3ImageUrl: data.card3ImageUrl */ });
+            card1ImageUrl: data.cards[0].image,
+            card2ImageUrl: data.cards[1].image,
+            card3ImageUrl: data.cards[2].image });
     }
 
     render() {
@@ -41,7 +42,7 @@ class CardGameBoard extends React.Component {
                 <BoardLayout>
                     <Row>
                         <Column>
-                            
+                            <CardLayout> <img src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></img> </CardLayout>
                         </Column>
                         <Column>
                            
