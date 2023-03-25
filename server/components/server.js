@@ -2,16 +2,45 @@
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+// server = 8000
+// client = 3000
+
+// Requirements
+// const cors               = require('cors');
+const { createDeck, Draw }  = require('./api.js');
 const express               = require('express');
 const http                  = require('http');
 const cors                  = require('cors');
-const { createDeck, Draw }  = require('./api.js');
 
-const app = express();
-app.use(cors()); // fix this afterwards
-const server = http.createServer(app);
+const port = 8000
 
-const port = 3001
+const server = http.createServer();
+const options = { cors: true, origins: ["http://127.0.0.1:3000"] }
+const io = require("socket.io")(server, options);
+
+io.on('connection', client => {
+  client.emit('init', { data: 'hello world'})
+  console.log('User connected')
+});
+
+server.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
+
+// https://www.youtube.com/watch?v=ppcBIHv_ZPs 
+
+// follow this!
+
+// join room with code
+  // is room empty?
+  // does room have one person?
+  // is room full?
+// disconnect room
+  // is room empty?
+  // does room have one person?
+// create room
+  // waiting page
+  
 
 /*
 app.get('/', (req, res) => {

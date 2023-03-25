@@ -14,13 +14,15 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "concurrently \"npm run start:client\" \"npm run start:server\"",
     "start:client": "react-scripts start",
-    "start:server": "node server/components/firebase.js"
+    "start:server": "node server/components/server.js"
   },
   "eslintConfig": {
     "extends": [

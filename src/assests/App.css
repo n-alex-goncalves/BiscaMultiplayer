@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+form {
+  text-align: center;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

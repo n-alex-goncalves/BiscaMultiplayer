@@ -1,6 +1,5 @@
 import React from 'react';
-// import { createDeckAndDraw, Draw } from './api'
-import { BoardLayout, CardLayout, Row, Column } from './layout';
+import { BoardLayout, CardLayout, Row, Column } from './Layout';
 
 class CardGameBoard extends React.Component {
     state = {
@@ -9,8 +8,6 @@ class CardGameBoard extends React.Component {
         card3ImageUrl: null
     }
     componentDidMount = async () => {
-        // Call the API endpoint to start the game and get the deck ID
-        console.log('hello')
         const response = await fetch('http://localhost:3001/startGame', {method: 'POST'});
         const data = await response.json();
         this.setState({ 
