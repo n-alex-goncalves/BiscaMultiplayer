@@ -9,23 +9,82 @@
 // const cors               = require('cors');
 const { createDeck, Draw }  = require('./api.js');
 const express               = require('express');
-const http                  = require('http');
 const cors                  = require('cors');
+const { v4: uuidv4 }        = require("uuid");
 
 const port = 8000
+const app = express()
+app.use(cors())
 
-const server = http.createServer();
-const options = { cors: true, origins: ["http://127.0.0.1:3000"] }
-const io = require("socket.io")(server, options);
+const games = {};
 
-io.on('connection', client => {
-  client.emit('init', { data: 'hello world'})
-  console.log('User connected')
+// Create a new game
+app.post("/createGame", (req, res) => {
+  console.log('Create Game Requested')
+  const gameID = uuidv4();
+  const players = [req.body.player];
+  const room = { id: gameID, players: players, gameState: null };
+  games.push(room); 
+  res.json({ gameID });
 });
 
-server.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(port, function() {
+  console.log(`Server is listening on port ${port}`);
 });
+
+/*
+app.post("/joinGame", (req, res) => {
+  const gameId = uuidv4();
+  res.json({ gameId });
+});
+
+function createGame(gameId, playerId) {
+  games[gameId] = {
+    players: [playerId],
+    currentPlayerIndex: 0
+  };
+}
+
+function joinGame(gameId, playerId) {
+  const game = games[gameId];
+  if (!game) {
+    throw new Error(`Game not found: ${gameId}`);
+  }
+  if (game.players.length >= 2) {
+    throw new Error(`Game is full: ${gameId}`);
+  }
+  game.players.push(playerId);
+}
+*/
+
+/*
+// Get the game state for a specific game ID
+app.get("/games/:id", (req, res) => {
+  const gameId = req.params.id;
+  const gameState = getGameState(gameId);
+  res.json(gameState);
+});
+
+// Make a move in a specific game ID
+app.post("/games/:id/moves", (req, res) => {
+  const gameId = req.params.id;
+  const move = req.body.move;
+  makeMove(gameId, move);
+  res.json({ success: true });
+});
+
+// Join a player to a specific game ID
+app.post("/games/:id/players", (req, res) => {
+  const gameId = req.params.id;
+  const playerName = req.body.name;
+  joinGame(gameId, playerName);
+  res.json({ success: true });
+});
+
+app.listen(3000, () => {
+  console.log("Server started on port 3000");
+});
+*/
 
 // https://www.youtube.com/watch?v=ppcBIHv_ZPs 
 
