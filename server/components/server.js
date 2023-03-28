@@ -9,25 +9,48 @@
 // const cors               = require('cors');
 const { createDeck, Draw }  = require('./api.js');
 const express               = require('express');
+const bodyParser            = require('body-parser');
 const cors                  = require('cors');
-const { v4: uuidv4 }        = require("uuid");
+var crypto                  = require("node:crypto");
 
 const port = 8000
 const app = express()
+
 app.use(cors())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const games = {};
 
 // Create a new game
-app.post("/createGame", (req, res) => {
-  console.log('Create Game Requested')
-  const gameID = uuidv4();
-  const players = [req.body.player];
-  const room = { id: gameID, players: players, gameState: null };
-  games.push(room); 
-  res.json({ gameID });
+app.post("/createRoom", (req, res) => {
+  const gameID = crypto.randomBytes(3).toString('hex');
+  const playerName = [req.body.player];
+  const room = { id: gameID, players: { player1: playerName, player2: null }, gameState: null };
+  games[gameID] = room;
+  res.send({ gameID });
 });
 
+app.post("/joinRoom", (req, res) => {
+  const gameID = [req.body.gameID]
+  const playerName = [req.body.player]
+  if (gameID in games) {
+    games[gamesID].players.player2 = playerName
+    // start game
+  } else {
+    // error message, game does not exist
+  }
+  res.send({ gameID });
+});
+
+// Define endpoint for getting the game state
+app.get('/game/:gameID', (req, res) => {
+  const gameID = req.params.gameID;
+  const gameState = getGameState(gameID);  // Retrieve the game state from some data store
+  res.json(gameState);
+});
+
+// Listen
 app.listen(port, function() {
   console.log(`Server is listening on port ${port}`);
 });

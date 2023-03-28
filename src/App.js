@@ -1,17 +1,24 @@
 
 import './assests/App.css';
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CreateGameForm from './components/CreateGameForm';
-import io from 'socket.io-client';
+import WaitingPage from './components/WaitingPage';
+import CardGameBoard from './components/CardGameBoard'
 // import React, { useState, useEffect } from 'react';
 // import socket from 'socket.js';
-// import CardGameBoard from './components/CardGameBoard'
 // import { Layout } from './components/Layout';
 
 function App() {
   return (
     <div className="App">
-      <header>CARD GAME</header>
-      <CreateGameForm></CreateGameForm>
+      <BrowserRouter>
+        <Routes>
+          <Route exact path="/" element={<CreateGameForm />} />
+          <Route path="/waiting/:roomId" element={< WaitingPage />} />
+          <Route path="/game/:roomId" element={< CardGameBoard />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
