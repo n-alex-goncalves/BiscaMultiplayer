@@ -36,7 +36,7 @@
   .create-game-form-button {
     padding: 10px 20px;
     font-size: 1.2rem;
-    background-color: #4caf50;
+    background-color: #62b966;
     color: white;
     border: none;
     border-radius: 5px;
@@ -47,13 +47,13 @@
   }
   
   .create-game-form-button:hover {
-    background-color: #3e8e41;
+    background-color: #3d8b3c;
   }
 
   .join-game-form-button {
     padding: 10px 20px;
     font-size: 1.2rem;
-    background-color:  #5658c5;
+    background-color:#6662b9;
     color: white;
     border: none;
     border-radius: 5px;

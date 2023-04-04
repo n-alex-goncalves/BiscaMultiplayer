@@ -7,27 +7,136 @@
 
 // Requirements
 // const cors               = require('cors');
-const { createDeck, Draw }  = require('./api.js');
-const express               = require('express');
-const bodyParser            = require('body-parser');
-const cors                  = require('cors');
-var crypto                  = require("node:crypto");
+const { createGameState, createPlayerState, createDeckID, Draw }  = require('./api.js');
+const express                                                   = require('express');
+const bodyParser                                                = require('body-parser');
+const cors                                                      = require('cors');
+const http                                                      = require('http');
+const crypto                                                    = require("node:crypto");
 
 const port = 8000
 const app = express()
 
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const games = {};
+const server = http.createServer(app);
+const io = require('socket.io')(server, { cors: { origin: '*', }, });
 
+const games = {};
+const socketToGameMap = {};
+
+io.on('connection', (socket) => {
+  console.log(`Socket ${socket.id} connected.`);
+  // Create a new game
+  socket.on("createRoom", () => {
+    const gameID = crypto.randomBytes(3).toString('hex');
+    const gameState = createGameState(gameID);
+
+    // Store the room in the games dictionary and map the socket ID to the corresponding game ID and player name
+    games[gameID] = gameState;
+    games[gameID].players[socket.id] = createPlayerState();
+    socketToGameMap[socket.id] = gameID;
+
+    // Add the socket to the room with roomID
+    socket.join(gameID);
+    
+    // Emit response to client
+    socket.emit("createRoomResponse", { gameID: gameID, success: true });
+  });
+
+  // Join a game
+  socket.on("joinRoom", (data) => {
+    if (data.gameID in games) {
+      // Check if the room is full
+      if (Object.keys(games[data.gameID].players).length > 1) {
+        console.error(`Error: Too many players in room (2 max)`);
+        return;
+      }
+       // Store the player's name in the games dictionary and map the socket ID to the corresponding game ID
+      games[data.gameID].players[socket.id] = createPlayerState();
+      socketToGameMap[socket.id] = data.gameID;
+      
+      // Add the socket to the room with roomID and emit response to client
+      socket.join(data.gameID);
+      socket.emit("joinRoomResponse", { gameID: data.gameID, success: true });
+    } else {
+      socket.emit("joinRoomResponse", { error: "Game does not exist." });
+    }
+  });
+
+  // Check if client is ready
+  socket.on("isReady", (name) => {
+    const gameID = socketToGameMap[socket.id];
+    const player = games[gameID]?.players[socket.id];
+    
+    // Check if gameID and player exists
+    if (!gameID || !player) {
+      console.error(`Error: Invalid gameID ${gameID} or player ${socket.id}`);
+      return;
+    }
+    
+    player.name = name;
+    player.isReady = true;
+
+    const numPlayers = Object.keys(games[gameID].players).length;
+    const numReadyPlayers = Object.values(games[gameID].players).filter(player => player.isReady).length;
+    
+    if (numPlayers === 2 && numReadyPlayers === 2) {
+      io.to(gameID).emit('joinGame', { success: true });
+    }
+  });
+
+  // Get the game state for a specific game ID
+  socket.on("startGame", (data) => {
+    console.log(data)
+    if (!games[data.gameID]?.players) {
+      throw new Error(`Game ${data.gameID} or players not found`);
+    }
+
+    // Deal three cards to each player
+    const playerSockets = Object.keys(games[data.gameID].players);
+    for (const socket of playerSockets) {
+      games[data.gameID].players[socket].hand = Draw(games[data.gameID].deckID, 3);
+    }
+
+    // Send updated game state to all players
+    io.to(data.gameID).emit("getGameStateResponse", { gameState: games[data.gameID], success: true });
+  });
+
+  // Get the game state for a specific game ID
+  socket.on('disconnect', () => {
+    const gameID = socketToGameMap[socket.id];
+    if (gameID) {
+      // Remove the corresponding playerName from the game
+      delete games[gameID].players[socket.id]
+    
+      // Check if both players are disconnected from the room and delete the game if true
+      if (Object.keys(games[gameID].players).length == 0) {
+        delete games[gameID]
+      }
+
+      // Remove the socket from socketToGameMap and socketToNameMap
+      delete socketToGameMap[socket.id];
+    }
+    console.log(`Socket ${socket.id} disconnected.`);
+  });
+});
+
+server.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
+
+
+/*
 // Create a new game
 app.post("/createRoom", (req, res) => {
   const gameID = crypto.randomBytes(3).toString('hex');
-  const playerName = [req.body.player];
+  const playerName = req.body.player;
   const room = { id: gameID, players: { player1: playerName, player2: null }, gameState: null };
   games[gameID] = room;
+  console.log(games)
   res.send({ gameID });
 });
 
@@ -52,8 +161,10 @@ app.get('/game/:gameID', (req, res) => {
 
 // Listen
 app.listen(port, function() {
+  games = {};
   console.log(`Server is listening on port ${port}`);
 });
+*/
 
 /*
 app.post("/joinGame", (req, res) => {

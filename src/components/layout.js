@@ -4,32 +4,66 @@ const Layout = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
   background-color: forestgreen;
 `;
 
-const BoardLayout = styled.div`
+const Score = styled.div`
+  font-weight: bold;
+  position: absolute;
+  right: 28em;
+  width: 25%;
+  background-color: white;
+  border: 3px solid #262722;
+`;
+
+const CardGroup = styled.div`
   display: flex;
+  justify-content: center;
+  align-content: center;
   flex-direction: column;
   margin: 16px;
   background-color: green;
+  border-radius: 8px;
+  padding: 16px;
 `;
 
-const CardLayout = styled.div`
+const CardContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  margin: 16px;
-  box-shadow: 20px 20px darkgreen;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid #262722;
+  border-radius: 10px;
+  width: 14vh;
+  height: 21vh;
+  margin: 0.25rem auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 5px 5px;
+  flex: 1;
 `;
 
+const CardImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
 
 const Row = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  position: relative;
+  flex: 1;
 `;
 
 const Column = styled.div`
-  flex: 33.33%;
-  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: 8px;
 `;
 
-export { Layout, BoardLayout, CardLayout, Row, Column };
+export { Layout, Score, CardGroup, CardContainer, CardImage, Row, Column };

@@ -1,52 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import socket from '../socket.js';
 import '../assests/CreateGameForm.css';
 
 function CreateGameForm() {
   const [name, setName] = useState('');
-  // const [nameError, setNameError] = useState(false)
   const [gameID, setGameID] = useState('');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    socket.on('createRoomResponse', (response) => {
+      console.log('Client received createRoomResponse');
+      if (response.success) {
+        const roomID = response.gameID;
+        navigate(`/waiting/${roomID}`, { state: name });
+      } else {
+        console.error(response.error);
+      }
+    });
+
+    socket.on('joinRoomResponse', (response) => {
+      console.log('Client received joinRoomResponse');
+      if (response.success) {
+        const roomID = response.gameID;
+        navigate(`/waiting/${roomID}`, { state: name });
+      } else {
+        setShowErrorMessage(true);
+        setTimeout(() => { setShowErrorMessage(false); }, 2000);
+        console.error(response.error);
+      }
+    }, [name]);
+
+    return () => {
+      socket.off('createRoomResponse');
+      socket.off('joinRoomResponse');
+    };
+  }, [name]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8000/createRoom', { player: name });
-      const roomID = response.data.gameID;
-      // Redirect the user to the waiting page with the game code
-      navigate(`/waiting/${roomID}`);
-    } catch (error) {
-      console.error(error);
+    if (name.trim() === '') {
+      setErrorMessage('Please enter a valid name.');
+      setShowErrorMessage(true);
+      setTimeout(() => { setShowErrorMessage(false); }, 2000);
+      return;
     }
+    socket.emit('createRoom', (response) => {
+      console.log('Client received callback function');
+      if (response.success) {
+        const roomID = response.gameID;
+        navigate(`/waiting/${roomID}`, { state: name });
+      } else {
+        console.error(response.error);
+      }
+    });
   };
 
   const handleGameCode = async (event) => {
-    const response = await axios.post('http://localhost:8000/joinRoom', { player: name });
     event.preventDefault();
-    try {
-      navigate(`/waiting/${gameID}`);
-    } catch (error) {
-      console.error(error);
+    if (name.trim() === '') {
+      setErrorMessage('Please enter a valid name.');
+      setShowErrorMessage(true);
+      setTimeout(() => { setShowErrorMessage(false); }, 2000);
+      return;
     }
+    if (gameID.trim() === '') {
+      setErrorMessage('Please enter a valid game code.');
+      setShowErrorMessage(true);
+      setTimeout(() => { setShowErrorMessage(false); }, 2000);
+      return;
+    }
+    socket.emit('joinRoom', ({ gameID: gameID }), (response) => {
+      console.log('Client received callback function');
+      if (response.success) {
+        navigate(`/waiting/${gameID}`, { state: name });
+      } else {
+        setErrorMessage('Game code does not exist.');
+        setShowErrorMessage(true);
+        setTimeout(() => { setShowErrorMessage(false); }, 2000);
+        console.error(response.error);
+      }
+    });
   };
-  
-  /*
-  const handleHowToPlayClick = () => {
-    // Show modal window with how to play instructions
-    console.log('Show how to play modal window');
-  };
-
-  const handleContactUsClick = () => {
-    // Show modal window with contact information
-    console.log('Show contact us modal window');
-  };
-
-  const handleLanguageChange = (event) => {
-    // Change language based on selected option
-    console.log(`Selected language: ${event.target.value}`);
-  };
-  */
 
   return (
     <div className="create-game-form-container">
@@ -65,6 +102,7 @@ function CreateGameForm() {
         </div>
         <button type="submit" className="join-game-form-button">JOIN VIA CODE</button>
       </form>
+      {showErrorMessage && (<div className="notification-alert notification-alert--error">{errorMessage}</div>)}
   </div>
   );
 }

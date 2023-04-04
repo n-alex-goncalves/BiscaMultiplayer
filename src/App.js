@@ -1,4 +1,3 @@
-
 import './assests/App.css';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -15,8 +14,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<CreateGameForm />} />
-          <Route path="/waiting/:roomId" element={< WaitingPage />} />
-          <Route path="/game/:roomId" element={< CardGameBoard />} />
+          <Route path="/waiting/:roomID" element={< WaitingPage />} />
+          <Route path="/game/:roomID" element={< CardGameBoard />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -24,10 +24,30 @@ body {
   margin-left: -70px;
   height: 20vh;
 }
-
 .hand {
   position: relative;
   height: 100px;
+}
+
+.copy-text {
+  position: relative;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: flex;
+}
+
+.copy-text text {
+  padding: 10px;
+  font-size: 10px;
+  color: #555;
+  border: none;
+  outline: none;
+}
+
+.copy-text button {
+  margin-left: 5px;
 }
 
 .card {
@@ -77,6 +97,44 @@ body {
     animation-duration: 6s;
     animation-name: card-3;
     animation-iteration-count: infinite;
+  }
+}
+
+.notification-alert {
+  position: fixed;
+  bottom: 0;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  opacity: 0;
+  bottom: -50px;
+  animation: flyinout 1.5s linear forwards;
+}
+
+.notification-alert--success {
+  background-color: #5adc64;
+  color: white;
+}
+
+.notification-alert--error {
+  background-color: #ee5a4e;
+  color: white;
+}
+
+@keyframes flyinout {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+    bottom: 10px;
+  }
+  70% {
+    opacity: 1;
+    bottom: 10px;
+  }
+  100% {
+    opacity: 0;
   }
 }
 

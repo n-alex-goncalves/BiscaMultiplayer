@@ -4,8 +4,30 @@ const api = axios.create({
     baseURL: 'https://deckofcardsapi.com/api/deck/'
 })
 
+// Create a Game State and return Game State
+const createGameState = (gameID) => {
+    const gameState = { 
+        gameID: gameID,
+        deckID: null,
+        players: {},
+        currentTrick: [],
+        currentTurn: 0
+    }
+    return gameState;
+};
+
+const createPlayerState = () => {
+    const playerState = { 
+        name: null,
+        hand: null,
+        score: 0,
+        isReady: false
+    }
+    return playerState;
+};
+
 // create a Deck and return Deck
-const createDeck = async () => {
+const createDeckID = async () => {
     const { data } = await api.get('new/shuffle/', {
         params: {
              // 8s, 9s and 10s removed
@@ -27,4 +49,4 @@ const Draw = async (deck_id, count) => {
     return { cardResponse };
 };
 
-module.exports = { createDeck, Draw }
+module.exports = { createGameState, createPlayerState, createDeckID, Draw }

@@ -1,77 +1,118 @@
-import React from 'react';
-import { BoardLayout, CardLayout, Row, Column } from './Layout';
+import React, { useState, useEffect }from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import socket from '../socket.js';
+import { Layout, Score, CardGroup, CardContainer, CardImage, Row, Column } from './Layout';
 
-class CardGameBoard extends React.Component {
-    state = {
+
+function CardGameBoard() {
+    const [gameState, setGameState] = useState(null);
+    const { roomID } = useParams();
+    const state = {
         card1ImageUrl: null,
         card2ImageUrl: null,
         card3ImageUrl: null
     }
-    componentDidMount = async () => {
-        const response = await fetch('http://localhost:3001/startGame', {method: 'POST'});
-        const data = await response.json();
-        this.setState({ 
-            card1ImageUrl: data.cards[0].image,
-            card2ImageUrl: data.cards[1].image,
-            card3ImageUrl: data.cards[2].image });
-    }
 
-    render() {
-        // https://deckofcardsapi.com/static/img/back.png
-        return (
-        <Column>
-            <Row>
-                <BoardLayout>
-                    <Row>
-                        <Column>
-                            <CardLayout> <img src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></img> </CardLayout>
-                        </Column>
-                        <Column>
-                            <CardLayout> <img src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card2"></img> </CardLayout>
-                        </Column>
-                        <Column>
-                            <CardLayout> <img src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card3"></img> </CardLayout>
-                        </Column>
-                    </Row>
-                </BoardLayout>
-            </Row>
-            <Row>
-                <BoardLayout>
-                    <Row>
-                        <Column>
-                            <CardLayout> <img src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></img> </CardLayout>
-                        </Column>
-                        <Column>
-                           
-                        </Column>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <Column>
-                            
-                        </Column>
-                        <Column>
-                            
-                        </Column>
-                    </Row>
-                </BoardLayout>
-            </Row>
-            <Row>
-                <BoardLayout>
-                    <Row>
-                        <Column>
-                            <CardLayout> <img src={this.state.card1ImageUrl} alt="P1Card1"></img> </CardLayout>
-                        </Column>
-                        <Column>
-                            <CardLayout> <img src={this.state.card2ImageUrl} alt="P1Card2"></img> </CardLayout>
-                        </Column>
-                        <Column>
-                            <CardLayout> <img src={this.state.card3ImageUrl} alt="P1Card3"></img> </CardLayout>
-                        </Column>
-                    </Row>
-                </BoardLayout>
-            </Row>
-        </Column>
-        )
-    }
+    useEffect(() => {
+        // Listen for the startGame event from the server
+        socket.emit('startGame', { gameID: roomID });
+        socket.on('getGameStateResponse', (response) => {
+            console.log('Client received getGameResponse');
+            if (response.success) {
+                const gameState = response.gameState;
+                console.log(gameState[socket.id])
+            } else {
+            console.error(response.error);
+            }
+        })
+    }, []);
+
+    return (
+        <Layout>
+            <Column>
+                <Row>
+                    <Score>
+                        <div>Nuno</div>
+                        <div>Points: 0</div>
+                    </Score>
+                    <CardGroup>
+                        <Row>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card2"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                            <Column>
+                                <CardContainer>
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card3"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                        </Row>
+                    </CardGroup>
+                </Row>
+                <Row>
+                    <CardGroup>
+                        <Row>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                        </Row>
+                    </CardGroup>
+                    <CardGroup>
+                        <Row>
+                            <Column>
+                                <CardContainer> 
+                                   
+                                </CardContainer>
+                            </Column>
+                            <Column>
+                                <CardContainer> 
+                                   
+                                </CardContainer>
+                            </Column>
+                        </Row>
+                    </CardGroup>
+                </Row>
+                <Row>
+                <   Score>
+                        <div>Timothy</div>
+                        <div>Points: 0</div>
+                    </Score>
+                    <CardGroup>
+                        <Row>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                            <Column>
+                                <CardContainer> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                </CardContainer>
+                            </Column>
+                        </Row>
+                    </CardGroup>
+                </Row>
+            </Column>
+        </Layout>
+        );
 }
 
 export default CardGameBoard
