@@ -10,9 +10,9 @@ const Layout = styled.div`
 
 const Score = styled.div`
   font-weight: bold;
-  position: absolute;
-  right: 28em;
-  width: 25%;
+  position: relative;
+  right: 1vw;
+  width: 13vw;
   background-color: white;
   border: 3px solid #262722;
 `;
@@ -23,6 +23,7 @@ const CardGroup = styled.div`
   align-content: center;
   flex-direction: column;
   margin: 16px;
+  min-height: 27vh;
   background-color: green;
   border-radius: 8px;
   padding: 16px;
@@ -32,10 +33,10 @@ const CardContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
   border: 3px solid #262722;
   border-radius: 10px;
-  width: 14vh;
-  height: 21vh;
+  width: 14vw;
   margin: 0.25rem auto;
   border-radius: 10px;
   overflow: hidden;

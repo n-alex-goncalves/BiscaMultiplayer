@@ -7,7 +7,7 @@
 
 // Requirements
 // const cors               = require('cors');
-const { createGameState, createPlayerState, createDeckID, Draw }  = require('./api.js');
+const { initializeGame, createGameState, createPlayerState, createDeckID, Draw }  = require('./api.js');
 const express                                                   = require('express');
 const bodyParser                                                = require('body-parser');
 const cors                                                      = require('cors');
@@ -29,8 +29,11 @@ const socketToGameMap = {};
 
 io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected.`);
-  // Create a new game
-  socket.on("createRoom", () => {
+  
+  // ======================
+
+  // Create a new game room
+  socket.on("createGameRoom", () => {
     const gameID = crypto.randomBytes(3).toString('hex');
     const gameState = createGameState(gameID);
 
@@ -46,64 +49,70 @@ io.on('connection', (socket) => {
     socket.emit("createRoomResponse", { gameID: gameID, success: true });
   });
 
-  // Join a game
-  socket.on("joinRoom", (data) => {
-    if (data.gameID in games) {
-      // Check if the room is full
-      if (Object.keys(games[data.gameID].players).length > 1) {
-        console.error(`Error: Too many players in room (2 max)`);
-        return;
-      }
-       // Store the player's name in the games dictionary and map the socket ID to the corresponding game ID
-      games[data.gameID].players[socket.id] = createPlayerState();
-      socketToGameMap[socket.id] = data.gameID;
-      
-      // Add the socket to the room with roomID and emit response to client
-      socket.join(data.gameID);
-      socket.emit("joinRoomResponse", { gameID: data.gameID, success: true });
-    } else {
+  // ======================
+
+  // Join an existing game room
+  socket.on("joinGameRoom", (data) => {
+    const gameID = data.gameID
+
+    if (!gameID || !games[gameID]) {
       socket.emit("joinRoomResponse", { error: "Game does not exist." });
+      return;
     }
+
+    // Store the player's name in the games dictionary and map the socket ID to the corresponding game ID
+    games[gameID].players[socket.id] = createPlayerState();
+    socketToGameMap[socket.id] = gameID;
+    
+    // Add the socket to the room with roomID and emit response to client
+    socket.join(gameID);
+    socket.emit("joinRoomResponse", { gameID: gameID, success: true });
   });
 
+  // ======================
+
   // Check if client is ready
-  socket.on("isReady", (name) => {
+  socket.on("onPlayerReady", async (data) => {
     const gameID = socketToGameMap[socket.id];
-    const player = games[gameID]?.players[socket.id];
+    const playerState = games[gameID]?.players[socket.id];
     
     // Check if gameID and player exists
-    if (!gameID || !player) {
+    if (!gameID || !playerState) {
       console.error(`Error: Invalid gameID ${gameID} or player ${socket.id}`);
       return;
     }
     
-    player.name = name;
-    player.isReady = true;
+    // Set new values to the player when they're ready
+    playerState.name = data.name;
+    playerState.isReady = true;
 
-    const numPlayers = Object.keys(games[gameID].players).length;
-    const numReadyPlayers = Object.values(games[gameID].players).filter(player => player.isReady).length;
+    const numReadyPlayers = Object.values(games[gameID].players).filter(playerState => playerState.isReady).length;
     
-    if (numPlayers === 2 && numReadyPlayers === 2) {
-      io.to(gameID).emit('joinGame', { success: true });
+    // Initialize the game and send each client to the gameBoard if both are ready.
+    if (numReadyPlayers === 2 && !games[gameID].hasStarted) {
+      games[gameID].hasStarted = true;
+      await initializeGame(games[gameID]);
+      io.to(gameID).emit('startGameSession', { success: true });
     }
   });
 
-  // Get the game state for a specific game ID
-  socket.on("startGame", (data) => {
-    console.log(data)
-    if (!games[data.gameID]?.players) {
-      throw new Error(`Game ${data.gameID} or players not found`);
+  // ======================
+
+  // Get gameState
+  socket.on("getGameState", (data) => {
+    const gameID = data.gameID
+    const gameState = games[gameID]
+
+    // Check if gameID and player exists
+    if (!gameID) {
+      console.error(`Error: Invalid gameID ${gameID} or player ${socket.id}`);
+      return;
     }
 
-    // Deal three cards to each player
-    const playerSockets = Object.keys(games[data.gameID].players);
-    for (const socket of playerSockets) {
-      games[data.gameID].players[socket].hand = Draw(games[data.gameID].deckID, 3);
-    }
-
-    // Send updated game state to all players
-    io.to(data.gameID).emit("getGameStateResponse", { gameState: games[data.gameID], success: true });
+    socket.emit("getGameStateResponse", { gameState: gameState, success: true });
   });
+
+  // ======================
 
   // Get the game state for a specific game ID
   socket.on('disconnect', () => {

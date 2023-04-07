@@ -28,7 +28,7 @@ function CreateGameForm() {
         navigate(`/waiting/${roomID}`, { state: name });
       } else {
         setShowErrorMessage(true);
-        setTimeout(() => { setShowErrorMessage(false); }, 2000);
+        setTimeout(() => { setShowErrorMessage(false); }, 2500);
         console.error(response.error);
       }
     }, [name]);
@@ -44,15 +44,16 @@ function CreateGameForm() {
     if (name.trim() === '') {
       setErrorMessage('Please enter a valid name.');
       setShowErrorMessage(true);
-      setTimeout(() => { setShowErrorMessage(false); }, 2000);
+      setTimeout(() => { setShowErrorMessage(false); }, 2500);
       return;
     }
-    socket.emit('createRoom', (response) => {
+    socket.emit('createGameRoom', (response) => {
       console.log('Client received callback function');
       if (response.success) {
         const roomID = response.gameID;
         navigate(`/waiting/${roomID}`, { state: name });
       } else {
+        setErrorMessage('Failed to create a game room.');
         console.error(response.error);
       }
     });
@@ -63,23 +64,23 @@ function CreateGameForm() {
     if (name.trim() === '') {
       setErrorMessage('Please enter a valid name.');
       setShowErrorMessage(true);
-      setTimeout(() => { setShowErrorMessage(false); }, 2000);
+      setTimeout(() => { setShowErrorMessage(false); }, 2500);
       return;
     }
     if (gameID.trim() === '') {
       setErrorMessage('Please enter a valid game code.');
       setShowErrorMessage(true);
-      setTimeout(() => { setShowErrorMessage(false); }, 2000);
+      setTimeout(() => { setShowErrorMessage(false); }, 2500);
       return;
     }
-    socket.emit('joinRoom', ({ gameID: gameID }), (response) => {
+    socket.emit('joinGameRoom', ({ gameID: gameID }), (response) => {
       console.log('Client received callback function');
       if (response.success) {
         navigate(`/waiting/${gameID}`, { state: name });
       } else {
         setErrorMessage('Game code does not exist.');
         setShowErrorMessage(true);
-        setTimeout(() => { setShowErrorMessage(false); }, 2000);
+        setTimeout(() => { setShowErrorMessage(false); }, 2500);
         console.error(response.error);
       }
     });

@@ -8,19 +8,21 @@ function WaitingPage() {
   const { roomID } = useParams();
   const navigate = useNavigate();
   const [showCopyMessage, setShowCopyMessage] = useState(false);
+
+  const location = useLocation();
   const timeoutRef = useRef(null);
+  const name = location.state;
 
   useEffect(() => {
     // Listen for the startGame event from the server
-    socket.emit('isReady');
-    socket.on('joinGame', () => {
+    socket.emit('onPlayerReady', { name: name });
+    socket.on('startGameSession', () => {
       console.log('Client received startGameResponse');
       navigate(`/game/${roomID}`);
     });
-
     // Clean up the event listener when the component unmounts
     return () => {
-      socket.off('joinGame');
+      socket.off('startGameSession');
     };
   }, []);
 
@@ -29,10 +31,7 @@ function WaitingPage() {
       clearTimeout(timeoutRef.current);
     }
     setShowCopyMessage(true);
-    timeoutRef.current = setTimeout(() => {
-      setShowCopyMessage(false);
-      timeoutRef.current = null;
-    }, 1500);
+    setTimeout(() => { setShowCopyMessage(false); }, 2500);
   };
 
   return (

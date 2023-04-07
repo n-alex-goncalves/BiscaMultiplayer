@@ -4,18 +4,35 @@ const api = axios.create({
     baseURL: 'https://deckofcardsapi.com/api/deck/'
 })
 
-// Create a Game State and return Game State
+// Initialize Game State
+const initializeGame = async (gameState) => {
+    const deck = await createDeckID();
+    const playerSockets = Object.keys(gameState.players);
+
+    for (const socket of playerSockets) {
+        gameState.players[socket].hand = await Draw(deck.deck_id, 3);
+    }
+
+    gameState.trumpCard = await Draw(deck.deck_id, 1);
+    gameState.deckID = deck.deck_id;
+  }
+
+// Create an empty Game State and return Game State
 const createGameState = (gameID) => {
     const gameState = { 
         gameID: gameID,
         deckID: null,
         players: {},
-        currentTrick: [],
-        currentTurn: 0
+        remainingCards: 40,
+        trumpCard: null,
+        currentTrick: [null, null],
+        currentTurn: 0,
+        hasStarted: false
     }
     return gameState;
 };
 
+// Create an empty Player State and return Player State
 const createPlayerState = () => {
     const playerState = { 
         name: null,
@@ -26,7 +43,7 @@ const createPlayerState = () => {
     return playerState;
 };
 
-// create a Deck and return Deck
+// Create a Deck and return Deck
 const createDeckID = async () => {
     const { data } = await api.get('new/shuffle/', {
         params: {
@@ -35,18 +52,17 @@ const createDeckID = async () => {
             deck_count: 1
         }
     })
-    const { deck_id: deck_id } = data;
-    return { deck_id };
+    return data;
 };
 
-// Draw a specified number of card from a deck
+// Draw (count) amount of cards from deck
 const Draw = async (deck_id, count) => {
     const { data: cardResponse }  = await api.get(`${deck_id}/draw/`, {
         params: {
             count: count
         }
     })
-    return { cardResponse };
+    return cardResponse;
 };
 
-module.exports = { createGameState, createPlayerState, createDeckID, Draw }
+module.exports = { initializeGame, createGameState, createPlayerState, createDeckID, Draw }
