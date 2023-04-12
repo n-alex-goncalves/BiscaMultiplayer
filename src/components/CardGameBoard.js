@@ -11,14 +11,14 @@ function CardGameBoard() {
 
     const [playerName, setPlayerName] = useState('');
     const [playerPoints, setPlayerPoints] = useState(0);
+    const [playerCards, setPlayerCards] = useState([]);
 
     const [opponentName, setOpponentName] = useState('');
     const [opponentPoints, setOpponentPoints] = useState(0);
+    const [opponentCards, setOpponentCards] = useState([]);
 
-    const [trumpCard, setTrumpCards] = useState(null)
-
+    const [trumpCard, setTrumpCard] = useState(null);
     const [currentTrick, setCurrentTrick] = useState([]); 
-    const [cardImageUrls, setCardImageUrls] = useState([]);
 
     useEffect(() => {
         // Listen for the startGame event from the server
@@ -26,12 +26,17 @@ function CardGameBoard() {
         
         socket.on('getGameStateResponse', (response) => {
             if (response.success) {
+                console.log('RECEIVED RESPONSE')
                 const { gameState } = response;
                 
                 // Set player's name
                 const playerState = gameState.players[socket.id];
-                const playerName = playerState.name
+                const playerName = playerState.name;
                 setPlayerName(playerName);
+
+                // Set player's hand
+                const playerCards = playerState.hand.cards;
+                setPlayerCards(playerCards);
 
                 // Set player's points
                 const playerScore = playerState.score
@@ -39,24 +44,25 @@ function CardGameBoard() {
 
                 // Set opponent's name
                 const opponentID = Object.keys(gameState.players).find(id => id !== socket.id);
-                const opponentName = gameState.players[opponentID].name;
+                const opponentState = gameState.players[opponentID];
+                const opponentName = opponentState.name;
                 setOpponentName(opponentName);
 
+                // Set opponent's hand
+                const opponentCards = opponentState.hand.cards;
+                setOpponentCards(opponentCards);
+
                 // Set opponent's points
-                const opponentScore = gameState.players[opponentID].score
-                setOpponentPoints(opponentScore)
+                const opponentScore = gameState.players[opponentID].score;
+                setOpponentPoints(opponentScore);
 
                 // Set trump card
-                const trumpCard = gameState.trumpCard.cards[0]
-                setTrumpCards(trumpCard.image)
+                const trumpCard = gameState.trumpCard.cards[0];
+                setTrumpCard(trumpCard);
                 
                 // Update state object with current trick cards
-                const currentTrick = gameState.currentTrick.map(card => card?.image);
-                setCurrentTrick([null, null]);
-
-                // Update state object with card image URLs
-                const cardImageUrls = playerState.hand.cards.map(card => card?.image);
-                setCardImageUrls(cardImageUrls);
+                const currentTrick = gameState.currentTrick
+                setCurrentTrick(currentTrick);
             }
         });
         
@@ -65,6 +71,15 @@ function CardGameBoard() {
           socket.off('getGameStateResponse');
         };
     }, []);
+
+    const handleCardSelection = (card, index) => {
+        const data = {
+            card: card,
+            index: index,
+            gameID: roomID,
+        }
+        socket.emit('onCardSelected', data);
+    }
 
     return (
         <Layout>
@@ -76,21 +91,13 @@ function CardGameBoard() {
                     </Score>
                     <CardGroup>
                         <Row>
-                            <Column>
-                                <CardContainer> 
-                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
-                                </CardContainer>
+                            {opponentCards.map((data, index) => (
+                            <Column key={`card-column-${index}`}>
+                                {data && <CardContainer> 
+                                    <CardImage src={data?.image} alt={`Card ${index+1}`}></CardImage> 
+                                </CardContainer>}
                             </Column>
-                            <Column>
-                                <CardContainer> 
-                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card2"></CardImage> 
-                                </CardContainer>
-                            </Column>
-                            <Column>
-                                <CardContainer>
-                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card3"></CardImage> 
-                                </CardContainer>
-                            </Column>
+                            ))}
                         </Row>
                     </CardGroup>
                 </Row>
@@ -99,23 +106,25 @@ function CardGameBoard() {
                         <Row>
                             <Column>
                                 <CardContainer> 
-                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="P2Card1"></CardImage> 
+                                    <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt="Deck 1"></CardImage> 
                                 </CardContainer>
                             </Column>
                             <Column>
                                 <CardContainer> 
-                                    <CardImage src={trumpCard} alt="P2Card1"></CardImage> 
+                                    <CardImage src={trumpCard?.image} alt="TrumpCard 1"></CardImage> 
                                 </CardContainer>
                             </Column>
                         </Row>
                     </CardGroup>
                     <CardGroup>
                         <Row>
-                        {currentTrick.map((url, index) => (
-                        <Column key={`trick-column-${index}`}>
-                            {url && <CardContainer> <CardImage src={'https://deckofcardsapi.com/static/img/back.png'} alt={`Trick ${index+1}`}></CardImage> </CardContainer>}
-                        </Column>
-                        ))}
+                            {currentTrick.map((data, index) => (
+                            <Column key={`trick-column-${index}`}>
+                                {data && <CardContainer> 
+                                            <CardImage src={data?.image} alt={`Trick ${index+1}`}></CardImage> 
+                                </CardContainer>}
+                            </Column>
+                            ))}
                         </Row>
                     </CardGroup>
                 </Row>
@@ -126,11 +135,11 @@ function CardGameBoard() {
                     </Score>
                     <CardGroup>
                         <Row>
-                            {cardImageUrls.map((url, index) => (
+                            {playerCards.map((data, index) => (
                             <Column key={`card-column-${index}`}>
-                                <CardContainer> 
-                                <CardImage src={url} alt={`Card ${index+1}`}></CardImage> 
-                                </CardContainer>
+                                {data && <CardContainer isPlayer={true}> 
+                                    <CardImage src={data?.image} alt={`Card ${index+1}`} onClick={() => handleCardSelection(data, index)}></CardImage> 
+                                </CardContainer>}
                             </Column>
                             ))}
                         </Row>
@@ -140,13 +149,5 @@ function CardGameBoard() {
         </Layout>
         );
 }
-
-
-/**
-
-
-))}
-
- */
 
 export default CardGameBoard

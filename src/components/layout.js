@@ -14,6 +14,7 @@ const Score = styled.div`
   right: 1vw;
   width: 13vw;
   background-color: white;
+  border-radius: 8px;
   border: 3px solid #262722;
 `;
 
@@ -23,7 +24,6 @@ const CardGroup = styled.div`
   align-content: center;
   flex-direction: column;
   margin: 16px;
-  min-height: 27vh;
   background-color: green;
   border-radius: 8px;
   padding: 16px;
@@ -36,12 +36,15 @@ const CardContainer = styled.div`
   box-sizing: border-box;
   border: 3px solid #262722;
   border-radius: 10px;
-  width: 14vw;
+  width: 125px;
   margin: 0.25rem auto;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 5px 5px;
   flex: 1;
+  &:hover {
+    transform: ${props => props.isPlayer ? 'translateY(-10px)' : 'none'};
+  }
 `;
 
 const CardImage = styled.img`
@@ -55,6 +58,7 @@ const Row = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  min-height: 21vh;
   flex: 1;
 `;
 
@@ -63,8 +67,11 @@ const Column = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-width: 16vw;
   flex: 1;
   padding: 8px;
 `;
+
+// need to change min-height and min-width
 
 export { Layout, Score, CardGroup, CardContainer, CardImage, Row, Column };
