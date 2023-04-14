@@ -1,9 +1,4 @@
-// Import the functions you need from the SDKs you need
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Requirements
-const { initializeGame, createGameState, createPlayerState, createDeckID, Draw, calculateTrickPoints } = require('./api.js');
+const { initializeGame, createGameState, createPlayerState, Draw, Return, calculateTrickPoints }       = require('./api.js');
 const express                                                                                          = require('express');
 const bodyParser                                                                                       = require('body-parser');
 const cors                                                                                             = require('cors');
@@ -111,6 +106,7 @@ io.on('connection', (socket) => {
 
   // ======================
 
+  // When card is selected by user
   socket.on("onCardSelected", async (data) => {
     const { card, index, gameID } = data;
     const gameState = games[gameID];
@@ -119,6 +115,7 @@ io.on('connection', (socket) => {
     const currentTurnIndex = gameState.currentTurnIndex;
     const currentPlayerIndex = gameState.turnOrder.indexOf(socket.id);
 
+    // Check if it's player's turn
     if (currentPlayerIndex !== gameState.currentTurnIndex) {
       console.log("PLAYER_NOT_TURN_ERROR");
       return;
@@ -128,19 +125,21 @@ io.on('connection', (socket) => {
     const newTrick = [...gameState.currentTrick];
     newTrick[currentTurnIndex] = card;
 
-    const newHand = { ...gameState.players[socket.id].hand };
-    newHand.cards[index] = undefined;
+    const newHand = [ ...gameState.players[socket.id].hand ];
+    newHand[index] = null;
     
     const newPlayers = { ...gameState.players };
     newPlayers[socket.id] = { ...newPlayers[socket.id], hand: newHand };
 
-    let newTurnIndex = (gameState.currentTurnIndex + 1) % Object.keys(games[gameID].players).length;
+    let newRemainingCards = gameState.remainingCards;
+
+    let newTurnIndex = (gameState.currentTurnIndex + 1) % Object.keys(gameState.players).length;
 
     // If the card trick is full
     if (newTrick.every((card) => card !== null)) {
       setTimeout(async () => {
         // Calculate trick points
-        const { winnerID, points } = calculateTrickPoints(newTrick, gameState.trumpCard.cards[0].suit);
+        const { winnerID, points } = calculateTrickPoints(newTrick, gameState.trumpCard.suit);
 
         // Reset the trick to an empty array
         newTrick.fill(null);
@@ -148,12 +147,31 @@ io.on('connection', (socket) => {
         // Update score
         newPlayers[winnerID] = { ...newPlayers[winnerID], score: newPlayers[winnerID].score + points };
 
-        // Draw a new card for each player
-        for (const [playerID, newPlayer] of Object.entries(newPlayers)) {
-          const undefinedCardIndex = newPlayer.hand.cards.findIndex(card => card === undefined);
-          if (undefinedCardIndex !== -1) {
-            const cardResponse = await Draw(deckID, 1, playerID);
-            newPlayer.hand.cards[undefinedCardIndex] = cardResponse.cards[0];
+        // Find the index of the winner in the Object.entries array
+        const winnerIndex = Object.entries(newPlayers).findIndex(([playerID]) => playerID === winnerID);
+
+        // Slice the array to start from the winnerIndex and concatenate it with the beginning part of the array
+        const playersArray = Object.entries(newPlayers);
+        const reorderedPlayers = playersArray.slice(winnerIndex).concat(playersArray.slice(0, winnerIndex));
+        
+        for (const [playerID, newPlayer] of reorderedPlayers) {
+          const nullIndex = newPlayer.hand.findIndex(card => card === null);
+
+          if (newRemainingCards == 0 && gameState.trumpCard != null) {
+            console.log(trumpCard); // return trumpcard
+            // remove
+            console.log(gameState); // update
+          }
+
+          if (nullIndex !== -1) {
+            // Draw a new card
+            const response = await Draw(deckID, 1, playerID);    
+
+            // Update remaining cards count in gameState
+            newRemainingCards = response.remaining;
+
+            // Set null empty index to new card drawn
+            newPlayer.hand[nullIndex] = response.cards[0];
           }
         }
 
@@ -164,6 +182,7 @@ io.on('connection', (socket) => {
           ...gameState,
           currentTrick: newTrick,
           players: newPlayers,
+          remainingCards: newRemainingCards,
           currentTurnIndex: newTurnIndex
         }
     
@@ -180,11 +199,15 @@ io.on('connection', (socket) => {
       ...gameState,
       currentTrick: newTrick,
       players: newPlayers,
+      remainingCards: newRemainingCards,
       currentTurnIndex: newTurnIndex
     }
 
     // Update the games object with the new game state
     games[gameID] = newGameState;
+    
+    // emit(getWiningStateResponse)
+    // have we reached a winning state?
 
     // Emit the updated game state to all clients in the game room
     io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });

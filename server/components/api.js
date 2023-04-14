@@ -7,29 +7,34 @@ const api = axios.create({
 // Initialize Game State
 const initializeGame = async (gameState) => {
     const deck = await createDeckID();
+    const deckID = deck.deck_id;
     const playerSockets = Object.keys(gameState.players);
 
     for (const socket of playerSockets) {
-        gameState.players[socket].hand = await Draw(deck.deck_id, 3, socket);
+        const response = await Draw(deckID, 3, socket);
+        gameState.remainingCards = response.remaining;
+        gameState.players[socket].hand = response.cards;
     }
 
-    gameState.trumpCard = await Draw(deck.deck_id, 1);
+    const trumpCard = await Draw(deckID, 1);
+    gameState.deckID = deckID;
+    gameState.trumpCard = trumpCard.cards[0];
     gameState.turnOrder = playerSockets;
-    gameState.deckID = deck.deck_id;
   }
+
 
 // Create an empty Game State and return Game State
 const createGameState = (gameID) => {
     return {
         gameID,
+        hasStarted: false,
         deckID: null,
-        players: {},
         remainingCards: 40,
         trumpCard: null,
         currentTrick: [null, null],
         currentTurnIndex: 0,
         turnOrder: [],
-        hasStarted: false
+        players: {} // Grouping players-related keys together
     };
 };
 
@@ -48,11 +53,19 @@ const createPlayerState = () => {
 // Create a Deck and return Deck
 const createDeckID = async () => {
     const cards = [
+        'AS', '2S',
+        'AD', '2D',
+        'AC', '2C',
+        'AH', '2H'
+    ];
+    /*
+    const cards = [
         'AS', '2S', '3S', '4S', '5S', '6S', '7S', 'JS', 'QS', 'KS',
         'AD', '2D', '3D', '4D', '5D', '6D', '7D', 'JD', 'QD', 'KD',
         'AC', '2C', '3C', '4C', '5C', '6C', '7C', 'JC', 'QC', 'KC',
         'AH', '2H', '3H', '4H', '5H', '6H', '7H', 'JH', 'QH', 'KH'
     ];
+    */
     const { data } = await api.get('new/shuffle/', {
         params: {
             cards: cards.join(','),
@@ -62,20 +75,33 @@ const createDeckID = async () => {
     return data;
 };
 
-// Draw (count) amount of cards from deck
+// Draw (count) number of cards from deck
 const Draw = async (deckID, count, socketID = null) => {
-    const { data: cardResponse }  = await api.get(`${deckID}/draw/`, {
+    const { data: response }  = await api.get(`${deckID}/draw/`, {
         params: {
             count: count
         }
     })
-    for (const card of cardResponse.cards) {
+
+    for (const card of response.cards) {
         card.cardOwnership = socketID;
     }
-    return cardResponse;
+
+    return response;
 };
 
+// Return (array) cards to deck
+const Return = async (deckID, cards) => {
+    const { data: response }  = await api.get(`${deckID}/return/`, {
+        params: {
+            cards: cards.join(',')
+        }
+    })
 
+    return response;
+};
+
+// Calculate the winner and number of points of a trick
 const calculateTrickPoints = (cards, trumpSuit) => {
     let winningCard = cards[0];
     let total = getValue(cards[0]);
@@ -101,6 +127,7 @@ const calculateTrickPoints = (cards, trumpSuit) => {
     return { winnerID: winningCard.cardOwnership, points: total };
   };
   
+// Retrieve the bisca value of card based on its original value
 const getValue = (card) => {
     switch (card.value) {
         case "ACE":
@@ -118,4 +145,4 @@ const getValue = (card) => {
     }
 };
 
-module.exports = { initializeGame, createGameState, createPlayerState, createDeckID, Draw, calculateTrickPoints }
+module.exports = { initializeGame, createGameState, createPlayerState, Draw, Return, calculateTrickPoints }

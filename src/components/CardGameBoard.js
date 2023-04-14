@@ -3,10 +3,24 @@ import { useParams } from 'react-router-dom';
 import socket from '../socket.js';
 import { Layout, Score, CardGroup, CardContainer, CardImage, Row, Column } from './Layout';
 
+// TO DO:
+
+// end-game sequence
+/*
+
+    [NAME] won!
+
+
+[REMATCH] [BACK TO HOME PAGE]
+
+*/
+
+
+// deck should correlate with the number of remaining cards
+// animations for drawing
+// animations for adding to the trick
 
 function CardGameBoard() {
-    // const [gameStarted, setGameStarted] = useState(false);
-    // const [gameState, setGameState] = useState(null);
     const { roomID } = useParams();
 
     const [playerName, setPlayerName] = useState('');
@@ -35,7 +49,8 @@ function CardGameBoard() {
                 setPlayerName(playerName);
 
                 // Set player's hand
-                const playerCards = playerState.hand.cards;
+                const playerCards = playerState.hand;
+                console.log(playerCards);
                 setPlayerCards(playerCards);
 
                 // Set player's points
@@ -49,7 +64,7 @@ function CardGameBoard() {
                 setOpponentName(opponentName);
 
                 // Set opponent's hand
-                const opponentCards = opponentState.hand.cards;
+                const opponentCards = opponentState.hand;
                 setOpponentCards(opponentCards);
 
                 // Set opponent's points
@@ -57,18 +72,23 @@ function CardGameBoard() {
                 setOpponentPoints(opponentScore);
 
                 // Set trump card
-                const trumpCard = gameState.trumpCard.cards[0];
+                const trumpCard = gameState.trumpCard;
                 setTrumpCard(trumpCard);
                 
                 // Update state object with current trick cards
                 const currentTrick = gameState.currentTrick
                 setCurrentTrick(currentTrick);
             }
+
+            socket.on('getWinningStateResponse', (response) => { 
+                console.log(response);
+            });
         });
         
         // Clean up the event listener when the component unmounts
         return () => {
           socket.off('getGameStateResponse');
+          socket.off('getWinningStateResponse');
         };
     }, []);
 
