@@ -12,36 +12,41 @@ const initializeGame = async (gameState) => {
 
     for (const socket of playerSockets) {
         const response = await Draw(deckID, 3, socket);
-        gameState.remainingCards = response.remaining;
+        gameState.board.remainingCards = response.remaining;
         gameState.players[socket].hand = response.cards;
     }
 
     const trumpCard = await Draw(deckID, 1);
-    gameState.deckID = deckID;
-    gameState.trumpCard = trumpCard.cards[0];
+    gameState.board.deckID = deckID;
+    gameState.board.trumpCard = trumpCard.cards[0];
     gameState.turnOrder = playerSockets;
   }
 
 
 // Create an empty Game State and return Game State
 const createGameState = (gameID) => {
+    const MAX_CARDS = 40;
     return {
         gameID,
         hasStarted: false,
-        deckID: null,
-        remainingCards: 40,
-        trumpCard: null,
-        currentTrick: [null, null],
+        board: { 
+            deckID: null,
+            trumpCard: null,
+            temporaryTrumpCard: null,
+            remainingCards: MAX_CARDS,
+            currentTrick: [null, null]
+            // other board-related properties
+        },
         currentTurnIndex: 0,
         turnOrder: [],
-        players: {} // Grouping players-related keys together
+        players: {}
     };
 };
 
 // Create an empty Player State and return Player State
-const createPlayerState = () => {
+const createPlayerState = (socketID) => {
     return { 
-        socketID: null,
+        socketID,
         name: null,
         hand: null,
         score: 0,
@@ -52,20 +57,20 @@ const createPlayerState = () => {
 
 // Create a Deck and return Deck
 const createDeckID = async () => {
+    /*
     const cards = [
         'AS', '2S',
         'AD', '2D',
         'AC', '2C',
         'AH', '2H'
     ];
-    /*
+    */
     const cards = [
         'AS', '2S', '3S', '4S', '5S', '6S', '7S', 'JS', 'QS', 'KS',
         'AD', '2D', '3D', '4D', '5D', '6D', '7D', 'JD', 'QD', 'KD',
         'AC', '2C', '3C', '4C', '5C', '6C', '7C', 'JC', 'QC', 'KC',
         'AH', '2H', '3H', '4H', '5H', '6H', '7H', 'JH', 'QH', 'KH'
     ];
-    */
     const { data } = await api.get('new/shuffle/', {
         params: {
             cards: cards.join(','),
@@ -86,7 +91,7 @@ const Draw = async (deckID, count, socketID = null) => {
     for (const card of response.cards) {
         card.cardOwnership = socketID;
     }
-
+    
     return response;
 };
 

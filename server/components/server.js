@@ -29,9 +29,9 @@ io.on('connection', (socket) => {
     const gameState = createGameState(gameID);
 
     // Store the room in the games dictionary and map the socket ID to the corresponding game ID and player name
-    games[gameID] = gameState;
-    games[gameID].players[socket.id] = createPlayerState();
+    gameState.players[socket.id] = createPlayerState(socket.id);
     socketToGameMap[socket.id] = gameID;
+    games[gameID] = gameState;
 
     // Add the socket to the room with roomID
     socket.join(gameID);
@@ -44,15 +44,16 @@ io.on('connection', (socket) => {
 
   // Join an existing game room
   socket.on("joinGameRoom", (data) => {
-    const gameID = data.gameID
+    const gameID = data.gameID;
+    const gameState = games[gameID];
 
-    if (!gameID || !games[gameID]) {
+    if (!gameID || !gameState) {
       socket.emit("joinRoomResponse", { error: "Game does not exist." });
       return;
     }
 
     // Store the player's name in the games dictionary and map the socket ID to the corresponding game ID
-    games[gameID].players[socket.id] = createPlayerState();
+    gameState.players[socket.id] = createPlayerState(socket.id);
     socketToGameMap[socket.id] = gameID;
     
     // Add the socket to the room with roomID and emit response to client
@@ -69,7 +70,7 @@ io.on('connection', (socket) => {
     const playerState = games[gameID]?.players[socket.id];
     
     // Check if gameID and player exists
-    if (!gameID || !playerState) {
+    if (!gameID || !gameState || !playerState) {
       console.error(`Error: Invalid gameID ${gameID} or player ${socket.id}`);
       return;
     }
@@ -92,16 +93,17 @@ io.on('connection', (socket) => {
 
   // Get gameState
   socket.on("getGameState", (data) => {
-    const gameID = data.gameID
-    const gameState = games[gameID]
+    const gameID = data.gameID;
+    const gameState = games[gameID];
 
     // Check if gameID and player exists
-    if (!gameID) {
+    if (!gameID || !games[gameID]) {
       console.error(`Error: Invalid gameID ${gameID} or player ${socket.id}`);
       return;
     }
 
     socket.emit("getGameStateResponse", { gameState: gameState, success: true });
+    console.log(gameState);
   });
 
   // ======================
@@ -110,8 +112,10 @@ io.on('connection', (socket) => {
   socket.on("onCardSelected", async (data) => {
     const { card, index, gameID } = data;
     const gameState = games[gameID];
-    const deckID = gameState.deckID;
+    const boardState = gameState.board;
+    const deckID = gameState.board.deckID;
 
+    // Turn index
     const currentTurnIndex = gameState.currentTurnIndex;
     const currentPlayerIndex = gameState.turnOrder.indexOf(socket.id);
 
@@ -122,24 +126,29 @@ io.on('connection', (socket) => {
     }
 
     // Assign intermediate variables
-    const newTrick = [...gameState.currentTrick];
-    newTrick[currentTurnIndex] = card;
-
     const newHand = [ ...gameState.players[socket.id].hand ];
     newHand[index] = null;
-    
+
     const newPlayers = { ...gameState.players };
     newPlayers[socket.id] = { ...newPlayers[socket.id], hand: newHand };
 
-    let newRemainingCards = gameState.remainingCards;
+    const newTrick = [...gameState.board.currentTrick];
+    newTrick[currentTurnIndex] = { ...card, index: index };
+
+    let newTrumpCard = gameState.board.trumpCard;
+    let newTemporaryTrumpCard = gameState.board.temporaryTrumpCard;
+
+    let newRemainingCards = gameState.board.remainingCards;
 
     let newTurnIndex = (gameState.currentTurnIndex + 1) % Object.keys(gameState.players).length;
 
     // If the card trick is full
     if (newTrick.every((card) => card !== null)) {
+      newTurnIndex = (gameState.currentTurnIndex) % Object.keys(gameState.players).length; 
       setTimeout(async () => {
         // Calculate trick points
-        const { winnerID, points } = calculateTrickPoints(newTrick, gameState.trumpCard.suit);
+        const trumpCard = newTemporaryTrumpCard || newTrumpCard;
+        const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
 
         // Reset the trick to an empty array
         newTrick.fill(null);
@@ -155,12 +164,13 @@ io.on('connection', (socket) => {
         const reorderedPlayers = playersArray.slice(winnerIndex).concat(playersArray.slice(0, winnerIndex));
         
         for (const [playerID, newPlayer] of reorderedPlayers) {
+
           const nullIndex = newPlayer.hand.findIndex(card => card === null);
 
-          if (newRemainingCards == 0 && gameState.trumpCard != null) {
-            console.log(trumpCard); // return trumpcard
-            // remove
-            console.log(gameState); // update
+          if (newRemainingCards == 0 && newTrumpCard !== null) {
+            const response = await Return(deckID, [newTrumpCard.code]);
+            newTemporaryTrumpCard = newTrumpCard;
+            newTrumpCard = null;
           }
 
           if (nullIndex !== -1) {
@@ -177,12 +187,19 @@ io.on('connection', (socket) => {
 
         // Winner begins next round
         newTurnIndex = gameState.turnOrder.indexOf(winnerID);
+        
+        const newBoardState = {
+          ...boardState,
+          trumpCard: newTrumpCard,
+          temporaryTrumpCard: newTemporaryTrumpCard,
+          remainingCards: newRemainingCards,
+          currentTrick: newTrick
+        }
 
         const newGameState = {
           ...gameState,
-          currentTrick: newTrick,
+          board: newBoardState,
           players: newPlayers,
-          remainingCards: newRemainingCards,
           currentTurnIndex: newTurnIndex
         }
     
@@ -194,21 +211,25 @@ io.on('connection', (socket) => {
         
       }, 2000); // Delay the execution by 2 seconds
     }
-  
+
+    const newBoardState = {
+      ...boardState,
+      trumpCard: newTrumpCard,
+      temporaryTrumpCard: newTemporaryTrumpCard,
+      remainingCards: newRemainingCards,
+      currentTrick: newTrick
+    }
+
     const newGameState = {
       ...gameState,
-      currentTrick: newTrick,
+      board: newBoardState,
       players: newPlayers,
-      remainingCards: newRemainingCards,
       currentTurnIndex: newTurnIndex
     }
 
     // Update the games object with the new game state
     games[gameID] = newGameState;
     
-    // emit(getWiningStateResponse)
-    // have we reached a winning state?
-
     // Emit the updated game state to all clients in the game room
     io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });
   });

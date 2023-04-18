@@ -1,0 +1,42 @@
+.card-enter {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  
+  .card-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .card-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .card-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 300ms, transform 300ms;
+  }
+
+  .hover-effect:hover {
+    transform: translateY(-15px); /* Apply the desired hover effect, e.g., translateY, scale, etc. */
+    /* Add any other styles for the hover effect */
+  }
+
+    /* CSS for Your Turn */
+  .your-turn {
+    background-color: #28a745; /* Green background color */
+    color: #fff; /* White text color */
+    width: 200px;
+    border-radius: 10px;
+  }
+
+  /* CSS for Opponent's Turn */
+  .opponent-turn {
+    background-color: #dc3545; /* Red background color */
+    color: #fff; /* White text color */
+    width: 200px;
+    border-radius: 30px;
+  }

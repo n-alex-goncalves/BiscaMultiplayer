@@ -14,11 +14,12 @@ const Score = styled.div`
   right: 1vw;
   width: 13vw;
   background-color: white;
-  border-radius: 8px;
   border: 3px solid #262722;
 `;
 
 const CardGroup = styled.div`
+  position: relative;
+  z-index: auto;
   display: flex;
   justify-content: center;
   align-content: center;
@@ -38,7 +39,6 @@ const CardContainer = styled.div`
   border-radius: 10px;
   width: 125px;
   margin: 0.25rem auto;
-  border-radius: 10px;
   overflow: hidden;
   box-shadow: 5px 5px;
   flex: 1;
@@ -55,15 +55,16 @@ const CardImage = styled.img`
 
 const Row = styled.div`
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
-  position: relative;
   min-height: 21vh;
   flex: 1;
 `;
 
 const Column = styled.div`
   display: flex;
+  position: relative;
   flex-direction: column;
   justify-content: center;
   align-items: center;

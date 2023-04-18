@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import socket from '../socket.js';
 import '../assests/CreateGameForm.css';
 
-function CreateGameForm() {
+const CreateGameForm = () => {
   const [name, setName] = useState('');
   const [gameID, setGameID] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);

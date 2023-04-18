@@ -4,7 +4,7 @@ import socket from '../socket.js';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import '../assests/WaitingPage.scss';
 
-function WaitingPage() {
+const WaitingPage = () => {
   const { roomID } = useParams();
   const navigate = useNavigate();
   const [showCopyMessage, setShowCopyMessage] = useState(false);
