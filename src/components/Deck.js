@@ -6,7 +6,7 @@ const Deck = ({ remainingCards }) => {
   const totalWidth = (34 - 1) * 5 + 10; // Assuming each card has a width of 100px and an offset of 5px
 
   return (
-    <div key={`deck-card-row`} id={'deck'} style={{ display: 'grid', maxWidth: `${totalWidth}px`, marginLeft: "40px", marginRight: "5px" }}>
+    <div key={`deck-card-row`} id={'deck'} style={{ display: 'grid', maxWidth: `${totalWidth}px`, marginLeft: "40px", marginRight: "50px", width: '125px', height: '180px' }}>
       {Array.from({ length: Math.min(remainingCards, 5) }, (_, index) => {
         const offset = 10 * index; 
         return (

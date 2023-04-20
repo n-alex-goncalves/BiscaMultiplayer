@@ -47,6 +47,7 @@ io.on('connection', (socket) => {
     const gameID = data.gameID;
     const gameState = games[gameID];
 
+    // Check if gameID and gameState exist
     if (!gameID || !gameState) {
       socket.emit("joinRoomResponse", { error: "Game does not exist." });
       return;
@@ -97,7 +98,7 @@ io.on('connection', (socket) => {
     const gameState = games[gameID];
 
     // Check if gameID and player exists
-    if (!gameID || !games[gameID]) {
+    if (!gameID || !gameState) {
       console.error(`Error: Invalid gameID ${gameID} or player ${socket.id}`);
       return;
     }
@@ -121,13 +122,18 @@ io.on('connection', (socket) => {
 
     // Check if it's player's turn
     if (currentPlayerIndex !== gameState.currentTurnIndex) {
-      console.log("PLAYER_NOT_TURN_ERROR");
       return;
     }
-
+    
     // Assign intermediate variables
     const newHand = [ ...gameState.players[socket.id].hand ];
     newHand[index] = null;
+
+    /*
+    if (newHand is entirely null for both players) {
+      io.to(gameID).emit('getWinningStateResponse', { gameState: gameState, winner: socket.id success: true });
+    }
+    */
 
     const newPlayers = { ...gameState.players };
     newPlayers[socket.id] = { ...newPlayers[socket.id], hand: newHand };
@@ -135,17 +141,17 @@ io.on('connection', (socket) => {
     const newTrick = [...gameState.board.currentTrick];
     newTrick[currentTurnIndex] = { ...card, index: index };
 
+    // Assign reassignable values for later use
     let newTrumpCard = gameState.board.trumpCard;
     let newTemporaryTrumpCard = gameState.board.temporaryTrumpCard;
-
     let newRemainingCards = gameState.board.remainingCards;
-
     let newTurnIndex = (gameState.currentTurnIndex + 1) % Object.keys(gameState.players).length;
 
     // If the card trick is full
     if (newTrick.every((card) => card !== null)) {
       newTurnIndex = (gameState.currentTurnIndex) % Object.keys(gameState.players).length; 
       setTimeout(async () => {
+
         // Calculate trick points
         const trumpCard = newTemporaryTrumpCard || newTrumpCard;
         const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
@@ -209,7 +215,7 @@ io.on('connection', (socket) => {
         // Emit the updated game state to all clients in the game room
         io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });
         
-      }, 2000); // Delay the execution by 2 seconds
+      }, 2000); 
     }
 
     const newBoardState = {
@@ -240,12 +246,14 @@ io.on('connection', (socket) => {
   // Get the game state for a specific game ID
   socket.on('disconnect', () => {
     const gameID = socketToGameMap[socket.id];
+    const gameState = games[gameID];
+
     if (gameID) {
       // Remove the corresponding playerName from the game
       delete games[gameID].players[socket.id]
     
       // Check if both players are disconnected from the room and delete the game if true
-      if (Object.keys(games[gameID].players).length == 0) {
+      if (Object.keys(gameState.players).length == 0) {
         delete games[gameID]
       }
 
@@ -254,6 +262,7 @@ io.on('connection', (socket) => {
     }
     console.log(`Socket ${socket.id} disconnected.`);
   });
+
 });
 
 server.listen(port, () => {

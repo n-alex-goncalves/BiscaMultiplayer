@@ -28,6 +28,7 @@ const CardGroup = styled.div`
   background-color: green;
   border-radius: 8px;
   padding: 16px;
+  height: 230px;
 `;
 
 const CardContainer = styled.div`
@@ -37,7 +38,6 @@ const CardContainer = styled.div`
   box-sizing: border-box;
   border: 3px solid #262722;
   border-radius: 10px;
-  width: 125px;
   margin: 0.25rem auto;
   overflow: hidden;
   box-shadow: 5px 5px;

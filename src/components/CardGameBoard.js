@@ -1,84 +1,18 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { Layout, Score, CardGroup, Row, Column } from './Layout';
-import TurnStatus from './TurnStatus'; 
-import '../assests/CardGameBoard.css';
+import { useNavigate } from 'react-router-dom';
 
-import socket from '../socket.js';
+import TurnStatus from './TurnStatus'; 
 import Card from "./Card.js";
 import Deck from "./Deck.js";
-
-// TO DO:
-
-// end-game sequence
-/*
-
-    [NAME] won!
-
-
-[REMATCH] [BACK TO HOME PAGE]
-
-*/
-
-
-// deck should correlate with the number of remaining cards
-// animations for drawing
-// animations for adding to the trick
-
-/*
-const positionMatrix = {};
-
-const originDestPairs = [
-    'player-card-1',
-    'player-card-2',
-    'player-card-3',
-    'current-trick-card-1',
-    'current-trick-card-2',
-    'deck',
-    'opponent-card-1',
-    'opponent-card-2',
-    'opponent-card-3'
-];
-
-const calculateInitialPosition = (origin, destination) => {
-    const originElement = document.getElementById(origin); 
-    const destinationElement = document.getElementById(destination);
-
-    console.log(originElement, destinationElement);
-    
-    if (originElement && destinationElement) {
-      const originRect = originElement.getBoundingClientRect();
-      const destinationRect = destinationElement.getBoundingClientRect(); 
-
-      const deckX = originRect.left - destinationRect.left;
-      const deckY = originRect.top - destinationRect.top;
-
-      return [deckX, deckY]
-    }
-    return [0, 0]
-};
-
-const calculateMatrix = () => {
-    for (let i = 0; i < originDestPairs.length; i++) {
-        const origin = originDestPairs[i]
-        positionMatrix[origin] = {}; // Initialize nested object for the origin
-        for (let j = 0; j < originDestPairs.length; j++) {
-            if (i !== j) {
-                const destination = originDestPairs[j]
-                positionMatrix[origin][destination] = calculateInitialPosition(origin, destination)
-            }
-        }
-    }
-}
-
-calculateMatrix();
-
-// Create the context
-export const Context = createContext();
-*/
+import socket from '../socket.js';
+import '../assests/CardGameBoard.css';
 
 const CardGameBoard = () => {
+
     const { roomID } = useParams();
+    const navigate = useNavigate();
 
     // Player's state
     const [playerName, setPlayerName] = useState('');
@@ -98,12 +32,9 @@ const CardGameBoard = () => {
     // Turn status
     const [turnStatus, setTurnStatus] = useState(null);
 
-    /*
-    useEffect(() => {
-        calculateMatrix();
-      }, []); // Empty dependency array, so the effect only runs once
-    */
-
+    // Game ending state
+    const [isGameEnd, setIsGameEnd] = useState(false);
+    const [winningPlayerName, setWinningPlayerName] = useState('');
     
     useEffect(() => {
         // Listen for the startGame event from the server
@@ -153,17 +84,12 @@ const CardGameBoard = () => {
                 setCurrentTrick(currentTrick);
                 
                 // Set turn status
-                if (gameState.turnOrder[gameState.currentTurnIndex] === socket.id) {
-                    setTurnStatus('YourTurn');
-                } else {
-                    setTurnStatus('OpponentTurn');
-                }
-
-                console.log(currentTrick);
+                const turnStatus = gameState?.turnOrder[gameState?.currentTurnIndex] === socket.id ? 'YourTurn' : 'OpponentTurn';
+                setTurnStatus(turnStatus);
             }
 
             socket.on('getWinningStateResponse', (response) => { 
-                console.log(response);
+                setIsGameEnd(true);
             });
         });
         
@@ -184,84 +110,112 @@ const CardGameBoard = () => {
         socket.emit('onCardSelected', data);
     }
 
+    // Function to reset game state
+    const resetGame = () => {
+        // ask server to reset game
+    };
+
+    // Function for game-ending screen
+    const renderGameEndScreen = () => {
+        return (
+            <div className="game-end-screen">
+                <h1>{winningPlayerName} won!</h1>
+                <button onClick={resetGame}>Rematch</button>
+                <button onClick={() => navigate(`/`)}>Back to Home Page</button>
+            </div>
+        );
+    };
+
     return (
-        //<Context.Provider value={positionMatrix}>
-            <Layout>
-                <Column>
-                    <Row>
-                        <Score>
-                            <div>{opponentName}</div>
-                            <div>Points: {opponentPoints}</div>
-                        </Score>
-                        <CardGroup>
-                            <Row>
-                                {opponentCards.map((data, index) => (
+        <Layout>
+            {isGameEnd ? renderGameEndScreen() : null}
+            <Column>
+                <Row>
+                    <Score>
+                        <div>{opponentName}</div>
+                        <div>Points: {opponentPoints}</div>
+                    </Score>
+                    <CardGroup>
+                        <Row>
+                            {opponentCards.map((data, index) => (
+                            <Column key={`card-column-${index}`}>
+                                <Card 
+                                    Card={data}
+                                    uniqueID={`opponent-card-${index+1}`}
+                                ></Card>
+                            </Column>
+                            ))}
+                        </Row>
+                    </CardGroup>
+                </Row>
+                <Row>
+                    <CardGroup>
+                        <Row>
+                            <Column>
+                                <Deck 
+                                    remainingCards={remainingCards}
+                                ></Deck>
+                            </Column>
+                            <Column>
+                                <Card 
+                                    Card={trumpCard} 
+                                    uniqueID={`trump-card`}
+                                    origin={`deck`}
+                                ></Card>    
+                            </Column>
+                        </Row>
+                    </CardGroup>
+                    <CardGroup>
+                        <Row>
+                            {currentTrick.map((data, index) => (
+                                <Column id={`trick-column-${index}`}>
+                                    <Card 
+                                        Card={data}
+                                        uniqueID={`current-trick-card-${index+1}`}
+                                        origin={data?.cardOwnership == socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
+                                        ></Card>
+                                </Column>
+                            ))}
+                        </Row>
+                    </CardGroup>
+                </Row>
+                <TurnStatus turnStatus={turnStatus}></TurnStatus>
+                <Row>
+                    <Score>
+                        <div>{playerName}</div>
+                        <div>Points: {playerPoints}</div>
+                    </Score>
+                    <CardGroup>
+                        <Row>
+                            {playerCards.map((data, index) => (
                                 <Column key={`card-column-${index}`}>
-                                    <Card 
-                                        Card={data} 
-                                        uniqueID={`opponent-card-${index+1}`}
-                                    ></Card>
-                                </Column>
-                                ))}
-                            </Row>
-                        </CardGroup>
-                    </Row>
-                    <Row>
-                        <CardGroup>
-                            <Row>
-                                <Column>
-                                    <Deck 
-                                        remainingCards={remainingCards}
-                                    ></Deck>
-                                </Column>
-                                <Column>
-                                    <Card 
-                                        Card={trumpCard} 
-                                        uniqueID={`trump-card`}
-                                    ></Card>    
-                                </Column>
-                            </Row>
-                        </CardGroup>
-                        <CardGroup>
-                            <Row>
-                                {currentTrick.map((data, index) => (
-                                    <Column key={`trick-column-${index}`}>
+                                    <div className="hover-effect" >
                                         <Card 
                                             Card={data} 
-                                            uniqueID={`current-trick-card-${index+1}`}
-                                            origin={`player-card-${data?.index+1}`}
+                                            uniqueID={`player-card-${index+1}`} 
+                                            onClick={() => handleCardSelection(data, index)} 
                                         ></Card>
-                                    </Column>
-                                ))}
-                            </Row>
-                        </CardGroup>
-                    </Row>
-                    <TurnStatus turnStatus={turnStatus}></TurnStatus>
-                    <Row>
-                        <Score>
-                            <div>{playerName}</div>
-                            <div>Points: {playerPoints}</div>
-                        </Score>
-                        <CardGroup>
-                            <Row>
-                                {playerCards.map((data, index) => (
-                                    <Column key={`card-column-${index}`}>
-                                        <div className="hover-effect" >
-                                            <Card 
-                                                Card={data} 
-                                                uniqueID={`player-card-${index+1}`} 
-                                                onClick={() => handleCardSelection(data, index)} 
-                                            ></Card>
-                                        </div>
-                                    </Column>
-                                ))}
-                            </Row>
-                        </CardGroup>
-                    </Row>
-                </Column>
-            </Layout>
-        //</Context.Provider>
+                                    </div>
+                                </Column>
+                            ))}
+                        </Row>
+                    </CardGroup>
+                </Row>
+            </Column>
+        </Layout>
         );
 }
 
 export default CardGameBoard
+
+// TO DO:
+
+// end-game sequence
+/*
+
+    [NAME] won!
+
+
+[REMATCH] [BACK TO HOME PAGE]
+
+*/
