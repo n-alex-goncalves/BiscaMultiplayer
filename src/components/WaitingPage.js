@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import socket from '../socket.js';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import '../assests/WaitingPage.scss';
+
+import socket from '../socket.js';
+import '../assets/WaitingPage.scss';
 
 const WaitingPage = () => {
   const { roomID } = useParams();
@@ -35,24 +37,30 @@ const WaitingPage = () => {
   };
 
   return (
-    <div className="waiting-page-container">
-      <h2>WAITING FOR OTHER PLAYER...</h2>
-      <div className="flickity-container">
-        <div className="hand">
-          <div className="card card-1"><span></span></div>
-          <div className="card card-2"><span></span></div>
-          <div className="card card-3"><span></span></div>
-        </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+    >
+      <div className="waiting-page-container">
+          <h2>WAITING FOR OTHER PLAYER...</h2>
+          <div className="flickity-container">
+            <div className="hand">
+              <div className="card card-1"><span></span></div>
+              <div className="card card-2"><span></span></div>
+              <div className="card card-3"><span></span></div>
+            </div>
+          </div>
+            <div className="copy-text">
+              <div className="text">Game Code: {roomID}</div>
+              <CopyToClipboard text={`${roomID}`} onCopy={handleCopy}>
+                <button><i className="fa fa-clone"></i></button>
+              </CopyToClipboard>
+            </div>
+          <p>Share the above code with your friends so they can join your game!</p>
+          {showCopyMessage && (<div className="notification-alert notification-alert--success"> Game Code copied!</div>)}
       </div>
-        <div className="copy-text">
-          <div className="text">Game Code: {roomID}</div>
-          <CopyToClipboard text={`${roomID}`} onCopy={handleCopy}>
-            <button><i className="fa fa-clone"></i></button>
-          </CopyToClipboard>
-        </div>
-      <p>Share the above code with your friends so they can join your game!</p>
-      {showCopyMessage && (<div className="notification-alert notification-alert--success"> Game Code copied!</div>)}
-    </div>
+    </motion.div>
   );
 }
 

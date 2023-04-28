@@ -1,74 +1,59 @@
-# Getting Started with Create React App
+# Bisca Portuguese Card Trick Game
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a web-based implementation of the Bisca Portuguese card trick game, developed using React, Node.JS, socket.io, Framer Motion, and the Deck of Cards API.
 
-## Available Scripts
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Demo](#demo)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-In the project directory, you can run:
+## Overview
+Bisca is a Portuguse card game that focuses on winning card-tricks. The game
+is popular in many countries, such as Portugal, Spain, Italy, Cape Verde, Angola, etc. The game is similar to its Italian equivalent, Briscola.
 
-### `npm start`
+The origins of Bisca are unclear, but it is believed to have originated from the Italian equivalent during a period of cultural exchange between the two countries 
+in the 16th century.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The game starts with both players being dealt three cards, and one additional card being drawn as the trump card. 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The implementation provided is a complete online equivalent of the game, allowing users to connect online and play against one another. The game features dynamic spring animation courtesy of Framer Motion, and the dynamic card renders courtesy of the Deck of Cards API.
 
-### `npm test`
+## Features
+- Real-time gameplay with interactive animations using Framer Motion.
+- Dynamic deck of cards rendered from the Deck of Cards API.
+- User-friendly interface with intuitive game mechanics.
+- Score tracking and with in-game card history.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Demo
+[Include a demo of your game, such as a GIF or a link to a live demo if available.]
 
-### `npm run build`
+## Installation
+[Provide instructions on how to install and set up your game locally. Include any dependencies or system requirements.]
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Usage
+[Provide instructions on how to play your Bisca Portuguese Card Trick game. Include any game rules or special instructions, as well as how to interact with your game's interface.]
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Technologies Used
+[Provide a list of the technologies and libraries you used in your project, along with brief explanations of their purposes.]
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- React: A popular JavaScript library for building user interfaces.
+- Framer Motion: A powerful animation library for React.
+- Deck of Cards API: An API that provides a deck of cards for use in web applications.
 
-### `npm run eject`
+## Contributing
+[Explain how others can contribute to your project. Include guidelines for submitting bug reports, feature requests, or pull requests.]
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## License
+[Specify the license under which your project is released. For example, MIT License, Apache License, etc.]
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Acknowledgements
+[Give credit to any individuals, organizations, or resources that have helped or inspired you in developing your game.]
+font-awesome
+oombi
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-
-bootstrap
-framer motion

@@ -3,12 +3,24 @@ const express                                                                   
 const bodyParser                                                                                       = require('body-parser');
 const cors                                                                                             = require('cors');
 const http                                                                                             = require('http');
-const crypto                                                                                           = require("node:crypto");
+const crypto                                                                                           = require("crypto");
+const path                                                                                             = require('path');
 
 const port = 8000
 const app = express()
 
 app.use(cors());
+
+// Serve static files from the root directory
+app.use(express.static(path.resolve(__dirname)));
+
+// Set the Content-Type header for .mp3 files
+app.get('/background-music.mp3', (req, res) => {
+  const filePath = path.resolve(__dirname, 'background-music.mp3');
+  res.setHeader('Content-Type', 'audio/mpeg');
+  res.sendFile(filePath);
+});
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -52,13 +64,14 @@ io.on('connection', (socket) => {
       socket.emit("joinRoomResponse", { error: "Game does not exist." });
       return;
     }
-
     // Store the player's name in the games dictionary and map the socket ID to the corresponding game ID
     gameState.players[socket.id] = createPlayerState(socket.id);
     socketToGameMap[socket.id] = gameID;
     
     // Add the socket to the room with roomID and emit response to client
-    socket.join(gameID);
+    if (!socket.rooms.has(gameID)) {
+      socket.join(gameID);
+    }
     socket.emit("joinRoomResponse", { gameID: gameID, success: true });
   });
 
@@ -90,6 +103,18 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Get gameState
+  socket.on("gameEnd", (data) => {
+    const gameID = socketToGameMap[socket.id];
+    const gameState = games[gameID];
+    const playerState = games[gameID]?.players[socket.id];
+
+    playerState.isReady = false;
+    gameState.hasStarted = false;
+
+    console.log('--------> Game Ended', socket.id);
+  });
+
   // ======================
 
   // Get gameState
@@ -104,7 +129,6 @@ io.on('connection', (socket) => {
     }
 
     socket.emit("getGameStateResponse", { gameState: gameState, success: true });
-    console.log(gameState);
   });
 
   // ======================
@@ -120,20 +144,15 @@ io.on('connection', (socket) => {
     const currentTurnIndex = gameState.currentTurnIndex;
     const currentPlayerIndex = gameState.turnOrder.indexOf(socket.id);
 
-    // Check if it's player's turn
-    if (currentPlayerIndex !== gameState.currentTurnIndex) {
+    // Check if it's player's turn or if card trick is full
+    if (currentPlayerIndex !== gameState.currentTurnIndex || gameState.board.currentTrick.every((card) => card !== null)) {
+      console.log('ERROR NOT PLAYER TURN')
       return;
     }
     
     // Assign intermediate variables
     const newHand = [ ...gameState.players[socket.id].hand ];
     newHand[index] = null;
-
-    /*
-    if (newHand is entirely null for both players) {
-      io.to(gameID).emit('getWinningStateResponse', { gameState: gameState, winner: socket.id success: true });
-    }
-    */
 
     const newPlayers = { ...gameState.players };
     newPlayers[socket.id] = { ...newPlayers[socket.id], hand: newHand };
@@ -150,17 +169,14 @@ io.on('connection', (socket) => {
     // If the card trick is full
     if (newTrick.every((card) => card !== null)) {
       newTurnIndex = (gameState.currentTurnIndex) % Object.keys(gameState.players).length; 
-      setTimeout(async () => {
 
+      setTimeout(async () => {
         // Calculate trick points
         const trumpCard = newTemporaryTrumpCard || newTrumpCard;
         const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
 
-        // Reset the trick to an empty array
-        newTrick.fill(null);
-
         // Update score
-        newPlayers[winnerID] = { ...newPlayers[winnerID], score: newPlayers[winnerID].score + points };
+        newPlayers[winnerID] = { ...newPlayers[winnerID], score: newPlayers[winnerID].score + points, cardsWon: newPlayers[winnerID].cardsWon.concat(newTrick) };
 
         // Find the index of the winner in the Object.entries array
         const winnerIndex = Object.entries(newPlayers).findIndex(([playerID]) => playerID === winnerID);
@@ -174,7 +190,7 @@ io.on('connection', (socket) => {
           const nullIndex = newPlayer.hand.findIndex(card => card === null);
 
           if (newRemainingCards == 0 && newTrumpCard !== null) {
-            const response = await Return(deckID, [newTrumpCard.code]);
+            await Return(deckID, [newTrumpCard.code]);
             newTemporaryTrumpCard = newTrumpCard;
             newTrumpCard = null;
           }
@@ -190,6 +206,9 @@ io.on('connection', (socket) => {
             newPlayer.hand[nullIndex] = response.cards[0];
           }
         }
+
+        // Reset the trick to an empty array
+        newTrick.fill(null);
 
         // Winner begins next round
         newTurnIndex = gameState.turnOrder.indexOf(winnerID);
@@ -214,8 +233,13 @@ io.on('connection', (socket) => {
     
         // Emit the updated game state to all clients in the game room
         io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });
-        
-      }, 2000); 
+
+        const players = Object.values(newGameState.players);
+        if (players.every(player => player.hand?.every(card => card == null))) {
+          io.to(gameID).emit('getWinningStateResponse', { gameState: gameState, winner: socket.id, success: true });
+          return;
+        }
+      }, 2000);
     }
 
     const newBoardState = {

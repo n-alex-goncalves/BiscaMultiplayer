@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    padding: 0;
+  }
+
+.audio-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  border-radius: 50%;
+  border: black;
+  transition: background-color 0.2s;
+}
+
+.audio-toggle {
+  width: 30px;
+  height: 30px;
+}
+
+.audio-toggle img {
+  width: 100%;
+  height: 100%;
+}
+
+  
+/**
+
+  return (
+    <div className="audio-container">
+      <audio ref={audioRef} autoPlay loop={isPlaying}>
+        <source src={src} type="audio/mpeg" />
+      </audio>
+      <button className="audio-toggle" onClick={toggleAudio}>
+        {isPlaying ? <FontAwesomeIcon icon={faVolumeUp} /> : <FontAwesomeIcon icon={faVolumeMute} />}
+      </button>
+    </div>
+  );
+};
+**/

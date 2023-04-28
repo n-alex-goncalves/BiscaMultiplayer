@@ -1,0 +1,37 @@
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9990;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.game-title {
+    margin: 50px 50px 0px 50px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.end-game-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    width: 250px;
+    background-color: #62b966;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+ 
+  .end-game-button:hover {
+    background-color: #3d8b3c;
+  }

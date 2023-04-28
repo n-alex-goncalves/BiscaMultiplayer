@@ -1,0 +1,220 @@
+.create-game-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.create-game-form-title {
+  font-size: 3rem;
+  margin-bottom: 40px;
+  margin-top: 70px;
+  font-weight: bold;
+  font-family: "Helvetica", "sans-serif";
+}
+
+.create-game-form-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.create-game-form-label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: grey;
+}
+
+.create-game-form-input {
+  display: flex;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+}
+
+.create-game-form-button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background-color: #62b966;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.create-game-form-button:hover {
+  background-color: #3d8b3c;
+}
+
+.join-game-form-button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background-color:#6662b9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.join-game-form-button:hover {
+  background-color: #3c3d8b;
+}
+
+.help-game-form-button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  background-color: #ff4e4e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.help-game-form-button:hover {
+  background-color: #bc3b3b;
+}
+
+.full-screen-box {
+  position: fixed;
+  top: 10%;
+  right: 10%;
+  bottom: 5%;
+  left: 10%;
+  background-color: #ff4e4e;
+  /* Add other styles as needed */
+}
+
+.full-screen-box-content {
+  color: white;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 35px;
+  padding-right: 35px;
+  padding-top: 10px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+
+.close {
+  position: absolute;
+  right: 32px;
+  top: 32px;
+  width: 32px;
+  height: 32px;
+  opacity: 0.3;
+  z-index: 9999;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+.close:before, .close:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 33px;
+  width: 2px;
+  background-color: white;
+}
+
+.close:before {
+  transform: rotate(45deg);
+}
+
+.close:after {
+  transform: rotate(-45deg);
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  color: blue;
+}
+
+/* Accordion menu container */
+.accordion-menu {
+  width: 100%;
+}
+
+/* Accordion menu item */
+.accordion-menu-item {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+/* Accordion menu header */
+.accordion-menu-header {
+  cursor: pointer;
+  padding: 0px 15px 0px 15px;
+  margin: 0px 15px 0px 15px;
+  background-color: #ff4e4e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Accordion menu content */
+.accordion-menu-content {
+  padding: 0px 20px 15px 20px;
+}
+  
+/* Accordion menu content */
+.accordion-menu-content p {
+  margin-top: 0px;
+}
+
+.accordion-menu-content b {
+  font-weight: bolder;
+}
+
+/* Accordion menu image */
+.accordion-menu-image {
+  margin-left: 10px;
+  flex: 0 0 150px;
+  max-width: 400px;
+}
+
+/* Accordion menu image img */
+.accordion-menu-image img {
+  max-width: 100%;
+  margin-right: 10px;
+}
+
+/* Accordion menu text */
+.accordion-menu-text {
+  flex: 1;
+  margin-top: 10px;
+  margin-left: 10px;
+  text-align: left;
+}
+
+.accordion-menu-text p {
+  white-space: pre-line;
+}
+
+/* Clear floats */
+.clearfix::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+  

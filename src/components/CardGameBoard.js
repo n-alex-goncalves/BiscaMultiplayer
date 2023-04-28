@@ -1,25 +1,29 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import { useParams } from 'react-router-dom';
-import { Layout, Score, CardGroup, Row, Column } from './Layout';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import TurnStatus from './TurnStatus'; 
-import Card from "./Card.js";
-import Deck from "./Deck.js";
+import { Layout, Score, CardGroup, Row, Column } from './Layout';
 import socket from '../socket.js';
-import '../assests/CardGameBoard.css';
+import '../assets/CardGameBoard.css';
+
+import Card from './subcomponent/Card';
+import Deck from './subcomponent/Deck';
+import NoCardsRemainingMessage from './subcomponent/NoCardsRemaining';
+import TurnStatus from './subcomponent/TurnStatus';
+import GameOver from './subcomponent/GameOver';
 
 const CardGameBoard = () => {
 
     const { roomID } = useParams();
-    const navigate = useNavigate();
 
     // Player's state
+    const [playerState, setPlayerState] = useState(null);
     const [playerName, setPlayerName] = useState('');
     const [playerPoints, setPlayerPoints] = useState(0);
     const [playerCards, setPlayerCards] = useState([]);
 
     // Opponent's state
+    const [opponentState, setOpponentState] = useState(null);
     const [opponentName, setOpponentName] = useState('');
     const [opponentPoints, setOpponentPoints] = useState(0);
     const [opponentCards, setOpponentCards] = useState([]);
@@ -34,12 +38,17 @@ const CardGameBoard = () => {
 
     // Game ending state
     const [isGameEnd, setIsGameEnd] = useState(false);
-    const [winningPlayerName, setWinningPlayerName] = useState('');
+
+    useEffect(() => {
+        // Code to run after myState is updated
+        updateScore();
+      }, [playerPoints]); // Specify the dependency as myState
     
     useEffect(() => {
         // Listen for the startGame event from the server
         socket.emit('getGameState', { gameID: roomID });
         
+        // should wait like a second when i receive a state.
         socket.on('getGameStateResponse', (response) => {
             if (response.success) {
                 const { gameState } = response;
@@ -89,7 +98,23 @@ const CardGameBoard = () => {
             }
 
             socket.on('getWinningStateResponse', (response) => { 
-                setIsGameEnd(true);
+                if (response.success) {
+                    const { gameState } = response;
+
+                    // Emit to server
+                    socket.emit('gameEnd', {});
+
+                    // Set player's state
+                    const playerState = gameState.players[socket.id];
+                    setPlayerState(playerState)
+
+                    // Set opponent's state
+                    const opponentID = Object.keys(gameState.players).find(id => id !== socket.id);
+                    const opponentState = gameState.players[opponentID];
+                    setOpponentState(opponentState)
+                    
+                    setIsGameEnd(true);
+                }
             });
         });
         
@@ -110,25 +135,36 @@ const CardGameBoard = () => {
         socket.emit('onCardSelected', data);
     }
 
-    // Function to reset game state
-    const resetGame = () => {
-        // ask server to reset game
-    };
+    // Function to update the score and trigger animation
+    const updateScore = () => {
+        // Add the CSS class for the animation
+        const scoreDiv = document.getElementById('scoreDiv');
+        
+        // Add the CSS class for the animation
+        scoreDiv.className += 'score-animation';
+
+        // Remove the CSS class after a short delay
+        setTimeout(() => {
+            scoreDiv.className = scoreDiv.className.replace('score-animation', '');
+        }, 1500); // Change this value to adjust the duration of the animation
+    }
 
     // Function for game-ending screen
     const renderGameEndScreen = () => {
         return (
-            <div className="game-end-screen">
-                <h1>{winningPlayerName} won!</h1>
-                <button onClick={resetGame}>Rematch</button>
-                <button onClick={() => navigate(`/`)}>Back to Home Page</button>
-            </div>
+            <GameOver playerState={playerState} opponentState={opponentState} winnerName={ playerState.score > opponentState.score ? playerState.name : opponentState.name }></GameOver>
         );
     };
 
     return (
-        <Layout>
+        <Layout style={{backgroundColor: 'forestgreen'}}>
             {isGameEnd ? renderGameEndScreen() : null}
+            <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{ duration: 0.5 }}
+            >
             <Column>
                 <Row>
                     <Score>
@@ -139,8 +175,8 @@ const CardGameBoard = () => {
                         <Row>
                             {opponentCards.map((data, index) => (
                             <Column key={`card-column-${index}`}>
-                                <Card 
-                                    Card={data}
+                                <Card
+                                    Card={data && { image: 'https://deckofcardsapi.com/static/img/back.png' }}
                                     uniqueID={`opponent-card-${index+1}`}
                                 ></Card>
                             </Column>
@@ -155,6 +191,7 @@ const CardGameBoard = () => {
                                 <Deck 
                                     remainingCards={remainingCards}
                                 ></Deck>
+                                {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
                             </Column>
                             <Column>
                                 <Card 
@@ -173,7 +210,8 @@ const CardGameBoard = () => {
                                         Card={data}
                                         uniqueID={`current-trick-card-${index+1}`}
                                         origin={data?.cardOwnership == socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
-                                        ></Card>
+                                        exit={{ scale: 0, opacity: 0, rotate: 180 }}
+                                    ></Card>
                                 </Column>
                             ))}
                         </Row>
@@ -183,7 +221,7 @@ const CardGameBoard = () => {
                 <Row>
                     <Score>
                         <div>{playerName}</div>
-                        <div>Points: {playerPoints}</div>
+                        <div id="scoreDiv">Points: {playerPoints}</div>
                     </Score>
                     <CardGroup>
                         <Row>
@@ -202,20 +240,9 @@ const CardGameBoard = () => {
                     </CardGroup>
                 </Row>
             </Column>
+           </motion.div>
         </Layout>
         );
 }
 
-export default CardGameBoard
-
-// TO DO:
-
-// end-game sequence
-/*
-
-    [NAME] won!
-
-
-[REMATCH] [BACK TO HOME PAGE]
-
-*/
+export default CardGameBoard;

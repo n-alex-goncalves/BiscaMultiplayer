@@ -5,16 +5,17 @@ const Layout = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: forestgreen;
 `;
 
 const Score = styled.div`
   font-weight: bold;
   position: relative;
-  right: 1vw;
-  width: 13vw;
+  right: 4vw;
+  font-size: 20px;
   background-color: white;
+  width: 18vw;
   border: 3px solid #262722;
+  text-align: center;
 `;
 
 const CardGroup = styled.div`
@@ -58,7 +59,6 @@ const Row = styled.div`
   position: relative;
   justify-content: center;
   align-items: center;
-  min-height: 21vh;
   flex: 1;
 `;
 
@@ -72,7 +72,5 @@ const Column = styled.div`
   flex: 1;
   padding: 8px;
 `;
-
-// need to change min-height and min-width
 
 export { Layout, Score, CardGroup, CardContainer, CardImage, Row, Column };

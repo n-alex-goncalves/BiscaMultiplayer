@@ -1,0 +1,11 @@
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Adjust the number of columns as needed */
+    gap: 1rem; /* Adjust the gap between grid items as needed */
+  }
+  
+  .grid-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }

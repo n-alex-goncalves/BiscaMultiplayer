@@ -1,0 +1,67 @@
+.card-enter {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  
+  .card-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .card-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .card-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 300ms, transform 300ms;
+  }
+
+  .hover-effect:hover {
+    transform: translateY(-15px); /* Apply the desired hover effect, e.g., translateY, scale, etc. */
+    /* Add any other styles for the hover effect */
+  }
+
+    /* CSS for Your Turn */
+  .your-turn {
+    background-color: #28a745; /* Green background color */
+    color: #fff; /* White text color */
+    width: 200px;
+    height: auto;
+    border-radius: 10px;
+  }
+
+  /* CSS for Opponent's Turn */
+  .opponent-turn {
+    background-color: #dc3545; /* Red background color */
+    color: #fff; /* White text color */
+    width: 200px;
+    border-radius: 30px;
+  }
+
+  /* Add the score-animation class for the animation */
+  .score-animation {
+    animation-name: scoreAnimation; /* Name of the keyframe animation */
+    animation-duration: 1.5s; /* Duration of the animation */
+    animation-timing-function: ease-in-out; /* Timing function for the animation */
+    animation-fill-mode: forwards; /* Keep the final state of the animation */
+  }
+
+  @keyframes scoreAnimation {
+    0% {
+      transform: scale(1); /* Starting scale */
+      opacity: 1; /* Starting opacity */
+    }
+    50% {
+      transform: scale(1.20); /* Scale up to 1.5x midway through the animation */
+      color: green;
+      opacity: 1; /* Fade out midway through the animation */
+    }
+    100% {
+      transform: scale(1); /* Scale back to 1x at the end of the animation */
+      opacity: 1; /* Fade in at the end of the animation */
+    }
+  }
