@@ -21,8 +21,8 @@ app.get('/background-music.mp3', (req, res) => {
   res.sendFile(filePath);
 });
 
-app.get('/', (req, res) => {
-  const filePath = path.join(__dirname, '../public/index.html');
+app.get('*', (req, res) => {
+  const filePath = path.join(__dirname, '../../public/index.html');
   res.sendFile(filePath);
 });
 
