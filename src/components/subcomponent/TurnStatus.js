@@ -1,10 +1,10 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const TurnStatus = ({ turnStatus }) => {
   const yourTurnClass = 'your-turn';
   const opponentTurnClass = 'opponent-turn';
-  const id = turnStatus == 'YourTurn' ? yourTurnClass : opponentTurnClass;
+  const id = turnStatus === 'YourTurn' ? yourTurnClass : opponentTurnClass;
 
  const variants = {
     show: {
@@ -23,7 +23,7 @@ const TurnStatus = ({ turnStatus }) => {
 
   return (
     <motion.div className={id} key={id} variants={variants} animate={'show'} initial="hide">
-      {turnStatus == 'YourTurn' ? 'YOUR TURN' : 'OPPONENT\'S TURN'}
+      {turnStatus === 'YourTurn' ? 'YOUR TURN' : 'OPPONENT\'S TURN'}
     </motion.div>
   );
 };

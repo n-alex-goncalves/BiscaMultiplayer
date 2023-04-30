@@ -17,12 +17,12 @@ const GameOver = ({playerState, opponentState, winnerName}) => {
             const roomID = response.gameID;
             navigate(`/waiting/${roomID}`, { state: playerState.name });
           }
-        }, []);
+        });
 
         return () => {
           socket.off('joinRoomResponse');
         };
-      }, []);
+      });
 
   const handleRematch = () => {
     socket.emit('joinGameRoom', ({ gameID: roomID }));

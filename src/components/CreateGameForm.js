@@ -47,7 +47,7 @@ const CreateGameForm = () => {
       socket.off('createRoomResponse');
       socket.off('joinRoomResponse');
     };
-  }, [name]);
+  });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -157,7 +157,7 @@ const CreateGameForm = () => {
       },
       {
         title: 'ACKNOWLEDGEMENTS & CREDITS',
-        content: `Martini Sunset - Written by Anonymous. Relaxed, jazzy and inspiring track made with warm piano, light drums and bass. Simple, upbeat and passionate. This music is available for commercial and non-commercial purposes. https://freepd.com/misc.php`,
+        content: ``,
       }
     ];
 
@@ -219,20 +219,21 @@ const CreateGameForm = () => {
             HOW TO PLAY
         </motion.button>
         {showHelpMessage && (
-        <motion.div
-          className='full-screen-box'
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 17 }}
-        >
-          <div className='close' onClick={handleHelpMessage}></div>
-          <div className='full-screen-box-content'>
-            <h2>HOW TO PLAY</h2>
-            <AccordionMenu />
-          </div>
-        </motion.div>
-      )}
+          <motion.div
+            className='full-screen-box'
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 17 }}
+          >
+            <div className='close' onClick={handleHelpMessage}></div>
+            <div className='full-screen-box-content'>
+              <h2>HOW TO PLAY</h2>
+              <AccordionMenu />
+            </div>
+          </motion.div>
+        )}
+        {showErrorMessage && (<div className="notification-alert notification-alert--error">{errorMessage}</div>)}
       </motion.div>
     </div>
   );
@@ -241,9 +242,6 @@ const CreateGameForm = () => {
 export default CreateGameForm;
 
 /**
-
-
-
 
 Ace                                        11 Points
 Seven (a.k.a Bisca)                        10 Points

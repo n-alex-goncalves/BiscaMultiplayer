@@ -26,7 +26,7 @@ const WaitingPage = () => {
     return () => {
       socket.off('startGameSession');
     };
-  }, []);
+  });
 
   const handleCopy = () => {
     if (timeoutRef.current !== null) {

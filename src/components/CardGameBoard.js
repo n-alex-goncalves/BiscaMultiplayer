@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { Layout, Score, CardGroup, Row, Column } from './Layout';
 import socket from '../socket.js';
@@ -123,7 +123,7 @@ const CardGameBoard = () => {
           socket.off('getGameStateResponse');
           socket.off('getWinningStateResponse');
         };
-    }, []);
+    }, [roomID]);
 
     // Function for dealing with card selection
     const handleCardSelection = (card, index) => {
@@ -209,7 +209,7 @@ const CardGameBoard = () => {
                                     <Card 
                                         Card={data}
                                         uniqueID={`current-trick-card-${index+1}`}
-                                        origin={data?.cardOwnership == socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
+                                        origin={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
                                         exit={{ scale: 0, opacity: 0, rotate: 180 }}
                                     ></Card>
                                 </Column>
