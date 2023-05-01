@@ -6,30 +6,47 @@ const http                                                                      
 const crypto                                                                                           = require("crypto");
 const path                                                                                             = require('path');
 
-const port = process.env.PORT || 5000
+// Prepare constants for app and server
 const app = express()
 
-app.use(cors());
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
 
-// Serve static files from the root directory
-app.use(express.static(path.resolve(__dirname)));
+// Define a route that serves the index.html file
+//__dirname : It will resolve to your project folder
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, 'build', '/../../public/index.html'));
+});
 
-// Set the Content-Type header for .mp3 files
+// Catch-all route that serves the index.html file for any other routes
+app.get('*', (req, res) => {
+  const filePath = path.join(__dirname, 'build', '/../../public/index.html');
+  res.sendFile(filePath);
+});
+
+app.get('/bundle.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'build', '/../../build/bundle.js'));
+});
+
+// Define a route that serves mp3 file
 app.get('/background-music.mp3', (req, res) => {
   const filePath = path.resolve(__dirname, 'background-music.mp3');
   res.setHeader('Content-Type', 'audio/mpeg');
   res.sendFile(filePath);
 });
 
-app.get('*', (req, res) => {
-  const filePath = path.join(__dirname, '../../public/index.html');
-  res.sendFile(filePath);
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Start server
+const server = http.createServer(app);
+
+const port = process.env.PORT || 8080;
+server.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-const server = http.createServer(app);
 const io = require('socket.io')(server, { cors: { origin: '*', }, });
 
 const games = {};
@@ -292,8 +309,4 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} disconnected.`);
   });
 
-});
-
-server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
 });
