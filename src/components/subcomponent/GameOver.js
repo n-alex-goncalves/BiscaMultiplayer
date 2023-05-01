@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layout, Row, Column } from '../Layout';
+import { Layout, Row, Column } from '../Layout.js';
 
 import socket from '../../socket.js';
-import InfoCard from "./InfoCard";
+import InfoCard from "./InfoCard.js";
 import '../../assets/GameOver.css';
 
 const GameOver = ({playerState, opponentState, winnerName}) => {
@@ -112,51 +112,4 @@ const GameOver = ({playerState, opponentState, winnerName}) => {
   );
 };
 
-/**
-
-
-.box {
-  width: 200px;
-  height: 200px;
-  background: var(--accent);
-}
-
-  .join-game-form-button {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    background-color:#6662b9;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    width: 100%;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-
-                                        <motion.h2 style={{color: 'white'}}>PLAYER 2</motion.h2>
-                                        <motion.div
-                                            className='endCard'
-                                            style={{ marginTop: "15px",
-                                                     backgroundColor: "white",
-                                                     borderRadius: '5px',
-                                                     padding: '5px 12px'
-                                            }}
-                                            variants={variants}
-                                            whileHover={'open'}
-                                            initial={{ opacity: 0 }}
-                                            animate={'general'} // -15 
-                                        >
-                                            <motion.h2>POINTS: 50</motion.h2>
-                                            {isOpen && (
-                                            <motion.div
-                                                initial={{ }}
-                                                animate={{ }} // -15 
-                                                transition={{ }}
-                                            >
-                                                <p>hello</p>
-                                            </motion.div>
-                                            )}
-                                        </motion.div>
- */
 export default GameOver;

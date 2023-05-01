@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import ImageGrid from './ImageGrid';
+import ImageGrid from './ImageGrid.js';
 
 const InfoCard = ({ playerName, points, cardsWon }) => {
     const [isOpen, setIsOpen] = useState(false);
