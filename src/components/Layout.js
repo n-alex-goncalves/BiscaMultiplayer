@@ -69,8 +69,8 @@ const Column = styled.div`
   justify-content: center;
   align-items: center;
   min-width: 16vw;
-  flex: 1;
   padding: 8px;
+  flex: 1;
 `;
 
 export { Layout, Score, CardGroup, CardContainer, CardImage, Row, Column };

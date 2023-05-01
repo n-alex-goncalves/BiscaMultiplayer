@@ -7,7 +7,6 @@ import socket from '../socket.js';
 import '../assets/CreateGameForm.css';
 
 import image01 from '../img/bisca_point_system.PNG'
-// import image02 from '../img'
 
 const CreateGameForm = () => {
   const [name, setName] = useState('');

@@ -31,7 +31,6 @@ app.use(express.static('build', {
 // Define a route that serves mp3 file
 app.get('/background-music.mp3', (req, res) => {
   const filePath = path.resolve(__dirname, 'background-music.mp3');
-  console.log(filePath)
   res.setHeader('Content-Type', 'audio/mpeg');
   res.sendFile(filePath);
 });
@@ -48,7 +47,12 @@ app.get('*', function(req, res) {
 });
 
 const server = http.createServer(app);
-const io = require('socket.io')(server, { cors: { origin: '*', }, });
+const io = require('socket.io')(server, { 
+  cors: { 
+    origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*'], 
+    methods: ["GET", "POST"],
+  }
+});
 
 const games = {};
 const socketToGameMap = {};
