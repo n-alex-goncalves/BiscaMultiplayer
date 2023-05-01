@@ -6,6 +6,8 @@ import { Layout, Row, Column } from '../Layout.js';
 import InfoCard from "./InfoCard.js";
 import '../../assets/GameOver.css';
 
+import socket from '../socket.js';
+
 const GameOver = ({playerState, opponentState, winnerName}) => {
     const { roomID } = useParams();
     const navigate = useNavigate();
