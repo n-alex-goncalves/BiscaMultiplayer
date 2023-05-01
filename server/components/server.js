@@ -6,47 +6,46 @@ const http                                                                      
 const crypto                                                                                           = require("crypto");
 const path                                                                                             = require('path');
 
-// Prepare constants for app and server
+const port = process.env.PORT || 8000;
 const app = express()
 
+app.use(cors());
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(path.join(__dirname, '../build')));
 
-// Define a route that serves the index.html file
-//__dirname : It will resolve to your project folder
-app.get('/*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'build', '/../../public/index.html'));
-});
 
-// Catch-all route that serves the index.html file for any other routes
-app.get('*', (req, res) => {
-  const filePath = path.join(__dirname, 'build', '/../../public/index.html');
-  res.sendFile(filePath);
-});
-
-app.get('/bundle.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'build', '/../../build/bundle.js'));
-});
+app.use(express.static('build', { 
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 // Define a route that serves mp3 file
 app.get('/background-music.mp3', (req, res) => {
   const filePath = path.resolve(__dirname, 'background-music.mp3');
+  console.log(filePath)
   res.setHeader('Content-Type', 'audio/mpeg');
   res.sendFile(filePath);
 });
 
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Start server
-const server = http.createServer(app);
-
-const port = process.env.PORT || 8080;
-server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+// Define a route that serves the index.html file
+//__dirname : It will resolve to your project folder
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
+// Catch-all route that serves the index.html file for any other routes
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+});
+
+const server = http.createServer(app);
 const io = require('socket.io')(server, { cors: { origin: '*', }, });
 
 const games = {};
@@ -309,4 +308,8 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} disconnected.`);
   });
 
+});
+
+server.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
 });
