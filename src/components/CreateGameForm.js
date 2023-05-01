@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 
 import DOMPurify from 'dompurify';
-import socket from '../socket.js';
 import '../assets/CreateGameForm.css';
 
 import image01 from '../img/bisca_point_system.PNG'
+
+import socket from '../socket.js';
 
 const CreateGameForm = () => {
   const [name, setName] = useState('');

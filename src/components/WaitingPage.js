@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import socket from '../socket.js';
 import '../assets/WaitingPage.scss';
+
+import socket from '../socket.js';
 
 const WaitingPage = () => {
   const { roomID } = useParams();

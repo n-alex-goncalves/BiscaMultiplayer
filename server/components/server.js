@@ -10,7 +10,7 @@ const port = process.env.PORT || 8000;
 const app = express()
 
 app.use(cors({
-  origin: '*'
+  origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*', 'https://bisca-multiplayer.onrender.com:8000']
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,9 +19,16 @@ app.use(bodyParser.json());
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../build')));
 
-
 app.use(express.static('build', { 
   setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+app.use('/static/js', express.static(path.join(__dirname, '../build/static/js'), {
+  setHeaders: function (res, path) {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
     }
@@ -38,6 +45,7 @@ app.get('/background-music.mp3', (req, res) => {
 // Define a route that serves the index.html file
 //__dirname : It will resolve to your project folder
 app.get('/*', function(req, res) {
+  console.log('RECEIVE INDEX.HTML')
   res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
@@ -49,7 +57,7 @@ app.get('*', function(req, res) {
 const server = http.createServer(app);
 const io = require('socket.io')(server, { 
   cors: { 
-    origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*'], 
+    origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*', 'https://bisca-multiplayer.onrender.com:8000'], 
     methods: ["GET", "POST"],
   }
 });
@@ -58,6 +66,7 @@ const games = {};
 const socketToGameMap = {};
 
 io.on('connection', (socket) => {
+
   console.log(`Socket ${socket.id} connected.`);
   
   // ======================

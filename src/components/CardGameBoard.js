@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 
 import { Layout, Score, CardGroup, Row, Column } from './Layout.js';
-import socket from '../socket.js';
 import '../assets/CardGameBoard.css';
 
 import Card from './subcomponent/Card';
@@ -11,6 +10,8 @@ import Deck from './subcomponent/Deck';
 import NoCardsRemainingMessage from './subcomponent/NoCardsRemaining';
 import TurnStatus from './subcomponent/TurnStatus';
 import GameOver from './subcomponent/GameOver';
+
+import socket from '../socket.js';
 
 const CardGameBoard = () => {
 

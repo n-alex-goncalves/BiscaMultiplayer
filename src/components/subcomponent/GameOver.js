@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layout, Row, Column } from '../Layout.js';
 
-import socket from '../../socket.js';
 import InfoCard from "./InfoCard.js";
 import '../../assets/GameOver.css';
 
