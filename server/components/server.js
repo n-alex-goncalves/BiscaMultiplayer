@@ -36,7 +36,7 @@ app.use('/static/js', express.static(path.join(__dirname, '../build/static/js'),
 
 // Define a route that serves mp3 file
 app.get('/background-music.mp3', (req, res) => {
-  const filePath = path.resolve(__dirname, 'background-music.mp3');
+  const filePath = path.resolve(__dirname, '../audio/background-music.mp3');
   res.setHeader('Content-Type', 'audio/mpeg');
   res.sendFile(filePath);
 });
@@ -44,7 +44,6 @@ app.get('/background-music.mp3', (req, res) => {
 // Define a route that serves the index.html file
 //__dirname : It will resolve to your project folder
 app.get('/*', function(req, res) {
-  console.log('RECEIVE INDEX.HTML')
   res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
@@ -59,17 +58,6 @@ const io = require('socket.io')(server, {
   }
 });
 
-io.on('connection', (socket) => {
-  console.log(`Socket ${socket.id} connected.`);
-});
-
-const port = process.env.PORT || 8000;
-server.listen(port, '0.0.0.0', () => {
-  console.log(`Server is listening on port ${port}`);
-});
-
-
-/**
 const games = {};
 const socketToGameMap = {};
 
@@ -308,7 +296,6 @@ io.on('connection', (socket) => {
     io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });
   });
 
-
   // ======================
 
   // Get the game state for a specific game ID
@@ -332,4 +319,9 @@ io.on('connection', (socket) => {
   });
 
 });
-**/
+
+// Start server
+const port = process.env.PORT || 8000;
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Server is listening on port ${port}`);
+});
