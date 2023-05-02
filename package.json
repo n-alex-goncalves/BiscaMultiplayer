@@ -18,6 +18,7 @@
     "firebase": "^9.16.0",
     "font-awesome": "^4.7.0",
     "framer-motion": "^10.12.2",
+    "http": "^0.0.1-security",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-copy-to-clipboard": "^5.1.0",

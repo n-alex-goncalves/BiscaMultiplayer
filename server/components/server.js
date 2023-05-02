@@ -6,8 +6,9 @@ const http                                                                      
 const crypto                                                                                           = require("crypto");
 const path                                                                                             = require('path');
 
-const port = process.env.PORT || 8000;
-const app = express()
+// express routing and socket.io, how do I do that?
+const app = express();
+const server = http.createServer(app);
 
 app.use(cors({
   origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*', 'https://bisca-multiplayer.onrender.com:8000']
@@ -54,7 +55,6 @@ app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
-const server = http.createServer(app);
 const io = require('socket.io')(server, { 
   cors: { 
     origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*', 'https://bisca-multiplayer.onrender.com:8000'], 
@@ -62,6 +62,17 @@ const io = require('socket.io')(server, {
   }
 });
 
+io.on('connection', (socket) => {
+  console.log(`Socket ${socket.id} connected.`);
+});
+
+const port = process.env.PORT || 8000;
+server.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
+
+
+/**
 const games = {};
 const socketToGameMap = {};
 
@@ -324,7 +335,4 @@ io.on('connection', (socket) => {
   });
 
 });
-
-server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
+**/
