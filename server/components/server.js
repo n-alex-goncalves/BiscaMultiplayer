@@ -10,9 +10,7 @@ const path                                                                      
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors({
-  origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*', 'https://bisca-multiplayer.onrender.com:8000']
-}));
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -57,8 +55,7 @@ app.get('*', function(req, res) {
 
 const io = require('socket.io')(server, { 
   cors: { 
-    origin: ['*', 'https://bisca-multiplayer.onrender.com', 'https://bisca-multiplayer.onrender.com:*', 'https://bisca-multiplayer.onrender.com:8000'], 
-    methods: ["GET", "POST"],
+    origin: ["*", "*:*", "https://bisca-multiplayer.onrender.com", "https://bisca-multiplayer.onrender.com:*", 'https://bisca-multiplayer.onrender.com:8000']
   }
 });
 
