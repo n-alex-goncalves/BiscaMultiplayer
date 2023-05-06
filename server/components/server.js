@@ -6,7 +6,7 @@ const http                                                                      
 const crypto                                                                                           = require("crypto");
 const path                                                                                             = require('path');
 
-// express routing and socket.io, how do I do that?
+// Express + http server
 const app = express();
 const server = http.createServer(app);
 
@@ -143,8 +143,6 @@ io.on('connection', (socket) => {
 
     playerState.isReady = false;
     gameState.hasStarted = false;
-
-    console.log('--------> Game Ended', socket.id);
   });
 
   // ======================
