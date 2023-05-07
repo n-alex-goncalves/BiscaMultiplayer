@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
+import { Container, Form, Button, Accordion, Image } from 'react-bootstrap'
 
 import DOMPurify from 'dompurify';
 import '../assets/CreateGameForm.css';
 
 import image01 from '../img/bisca_point_system.PNG'
 import socket from '../socket.js';
-
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Accordion from 'react-bootstrap/Accordion';
-import Image from 'react-bootstrap/Image'
 
 const CreateGameForm = () => {
   const [name, setName] = useState('');
@@ -182,7 +178,7 @@ const CreateGameForm = () => {
   };
 
   return (
-    <div className="create-game-form-container">
+    <Container className="create-game-form-container">
       {GameTitle()}
       <motion.div
         initial={{ opacity: 0, scale: 1 }}
@@ -191,7 +187,7 @@ const CreateGameForm = () => {
           duration: 0.5
         }}
       > 
-        <Form onSubmit={handleSubmit} style={{ maxWidth: '200px'}}>
+        <Form onSubmit={handleSubmit} style={{ maxWidth: '200px' }}>
           <Form.Group className="mb-2 text-left">
             <Form.Label className="create-game-form-label float-start">Player Name:</Form.Label>
             <div></div>
@@ -232,7 +228,7 @@ const CreateGameForm = () => {
         )}
         {showErrorMessage && (<div className="notification-alert notification-alert--error">{errorMessage}</div>)}
       </motion.div>
-    </div>
+    </Container>
   );
 }
 
