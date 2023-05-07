@@ -2,13 +2,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
 }
 
 .create-game-form-title {
   font-size: 3rem;
-  margin-bottom: 40px;
-  margin-top: 70px;
   font-weight: bold;
   font-family: "Helvetica", "sans-serif";
 }
@@ -17,7 +14,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 20px;
 }
 
 .create-game-form-label {
