@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Container, Form, Button, Accordion, Image } from 'react-bootstrap'
 
 import '../assets/WaitingPage.scss';
 
@@ -43,7 +44,7 @@ const WaitingPage = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
     >
-      <div className="waiting-page-container">
+      <Container className="waiting-page-container vh-100 vw-100 d-flex align-items-center justify-content-center">
           <h2>WAITING FOR OTHER PLAYER...</h2>
           <div className="flickity-container">
             <div className="hand">
@@ -58,9 +59,9 @@ const WaitingPage = () => {
                 <button><i className="fa fa-clone"></i></button>
               </CopyToClipboard>
             </div>
-          <p>Share the above code with your friends so they can join your game!</p>
+          <p class="mt-4 ms-2 me-2">Share the above code with your friends so they can join your game!</p>
           {showCopyMessage && (<div className="notification-alert notification-alert--success"> Game Code copied!</div>)}
-      </div>
+      </Container>
     </motion.div>
   );
 }

@@ -105,7 +105,7 @@ const CreateGameForm = () => {
         className="titleContainer"
         initial={{ scale: 0 }}
         animate={{ rotate: 360, scale: 1 }}
-        style={{ fontSize: '3rem', marginBottom: '40px', marginTop: '70px', fontWeight: 'bold', fontFamily: "Helvetica, sans-serif" }}
+        style={{ fontSize: '3rem', marginBottom: '35px', fontWeight: 'bold', fontFamily: "Helvetica, sans-serif" }}
         transition={{ type: "spring", stiffness: 200, damping: 17 }}
       >
         BISCA!
@@ -178,7 +178,7 @@ const CreateGameForm = () => {
   };
 
   return (
-    <Container className="create-game-form-container">
+    <Container className="create-game-form-container vh-100 vw-100 d-flex align-items-center justify-content-center">
       {GameTitle()}
       <motion.div
         initial={{ opacity: 0, scale: 1 }}
