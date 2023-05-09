@@ -178,7 +178,7 @@ const CreateGameForm = () => {
   };
 
   return (
-    <Container className="create-game-form-container vh-100 vw-100 d-flex align-items-center justify-content-center">
+    <Container className="create-game-form-container vh-100 d-flex align-items-center justify-content-center">
       {GameTitle()}
       <motion.div
         initial={{ opacity: 0, scale: 1 }}
@@ -193,13 +193,13 @@ const CreateGameForm = () => {
             <div></div>
             <Form.Control type="text" value={name} onChange={(event) => setName(event.target.value)} className="create-game-form-input" id="name" placeholder="e.g., John" />
           </Form.Group>
-          <Button className="mb-3 create-game-form-button" type="submit">
+          <Button className="mb-3 mb-sm-6 create-game-form-button" type="submit">
             CREATE GAME
           </Button>
         </Form>
 
         <Form onSubmit={handleGameCode} style={{ maxWidth: '200px'}}>
-          <Form.Group className="mb-2 text-left">
+          <Form.Group className="mb-2 mb-sm-5 text-left">
             <Form.Label className="create-game-form-label float-start">Game Code:</Form.Label>
             <div></div>
             <Form.Control type="text" value={gameID} onChange={(event) => setGameID(event.target.value)} className="create-game-form-input" id="gameID" placeholder="e.g., zdh3fj" />

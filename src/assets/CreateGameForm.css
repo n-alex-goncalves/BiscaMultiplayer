@@ -51,7 +51,6 @@
 
 .join-game-form-button {
   padding: 10px 20px;
-  font-size: 1.2rem;
   background-color:#6662b9;
   color: white;
   border: none;
@@ -235,4 +234,3 @@
   display: table;
   clear: both;
 }
-  
