@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Container, Row } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 
 import '../assets/WaitingPage.scss';
 

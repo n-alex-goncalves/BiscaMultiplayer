@@ -65,3 +65,32 @@
       opacity: 1; /* Fade in at the end of the animation */
     }
   }
+
+  /* Default style without zoom */
+.game-container {
+  position: relative;
+  overflow: hidden;
+  background-color: rgb(54, 147, 54);
+  /* Your other styles */
+}
+
+.game-content {
+}
+
+@media (min-width: 0px) { /* Medium screens (md) and above */
+  .game-content {
+    transform: scale(0.9);
+  }
+}
+
+@media (min-width: 576px) { /* Medium screens (md) and above */
+  .game-content {
+    transform: scale(0.7);
+  }
+}
+
+@media (min-width: 1152px) { /* Medium screens (md) and above */
+  .game-content {
+    transform: scale(0.6);
+  }
+}

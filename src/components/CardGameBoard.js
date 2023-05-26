@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 
-import { Layout, Score, CardGroup, Row, Column } from './Layout.js';
+import { Layout } from './Layout.js';
+import { Container, Row, Col } from 'react-bootstrap'
 import '../assets/CardGameBoard.css';
 
 import Card from './subcomponent/Card';
 import Deck from './subcomponent/Deck';
-import NoCardsRemainingMessage from './subcomponent/NoCardsRemaining';
+import PlayerComponent from './subcomponent/PlayerComponent';
 import TurnStatus from './subcomponent/TurnStatus';
 import GameOver from './subcomponent/GameOver';
 
@@ -19,31 +20,26 @@ const CardGameBoard = () => {
 
     // Player's state
     const [playerState, setPlayerState] = useState(null);
-    const [playerName, setPlayerName] = useState('');
+    const [playerName, setPlayerName] = useState('Nuno');
     const [playerPoints, setPlayerPoints] = useState(0);
-    const [playerCards, setPlayerCards] = useState([]);
+    const [playerCards, setPlayerCards] = useState([1, 1, 1]);
 
     // Opponent's state
     const [opponentState, setOpponentState] = useState(null);
-    const [opponentName, setOpponentName] = useState('');
+    const [opponentName, setOpponentName] = useState('Nuno');
     const [opponentPoints, setOpponentPoints] = useState(0);
-    const [opponentCards, setOpponentCards] = useState([]);
+    const [opponentCards, setOpponentCards] = useState([1, 1, 1]);
 
     // Board's state
-    const [remainingCards, setRemainingCards] = useState(null);
+    const [remainingCards, setRemainingCards] = useState(5);
     const [trumpCard, setTrumpCard] = useState(null);
-    const [currentTrick, setCurrentTrick] = useState([]); 
+    const [currentTrick, setCurrentTrick] = useState([1]); 
 
     // Turn status
     const [turnStatus, setTurnStatus] = useState(null);
 
     // Game ending state
     const [isGameEnd, setIsGameEnd] = useState(false);
-
-    useEffect(() => {
-        // Code to run after myState is updated
-        updateScore();
-      }, [playerPoints]); // Specify the dependency as myState
     
     useEffect(() => {
         // Listen for the startGame event from the server
@@ -126,30 +122,6 @@ const CardGameBoard = () => {
         };
     }, [roomID]);
 
-    // Function for dealing with card selection
-    const handleCardSelection = (card, index) => {
-        const data = {
-            card: card,
-            index: index,
-            gameID: roomID,
-        }
-        socket.emit('onCardSelected', data);
-    }
-
-    // Function to update the score and trigger animation
-    const updateScore = () => {
-        // Add the CSS class for the animation
-        const scoreDiv = document.getElementById('scoreDiv');
-        
-        // Add the CSS class for the animation
-        scoreDiv.className += 'score-animation';
-
-        // Remove the CSS class after a short delay
-        setTimeout(() => {
-            scoreDiv.className = scoreDiv.className.replace('score-animation', '');
-        }, 1500); // Change this value to adjust the duration of the animation
-    }
-
     // Function for game-ending screen
     const renderGameEndScreen = () => {
         return (
@@ -158,91 +130,54 @@ const CardGameBoard = () => {
     };
 
     return (
-        <Layout style={{backgroundColor: 'forestgreen'}}>
-            {isGameEnd ? renderGameEndScreen() : null}
-            <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-            <Column>
-                <Row>
-                    <Score>
-                        <div>{opponentName}</div>
-                        <div>Points: {opponentPoints}</div>
-                    </Score>
-                    <CardGroup>
-                        <Row>
-                            {opponentCards.map((data, index) => (
-                            <Column key={`card-column-${index}`}>
-                                <Card
-                                    Card={data && { image: 'https://deckofcardsapi.com/static/img/back.png' }}
-                                    uniqueID={`opponent-card-${index+1}`}
-                                ></Card>
-                            </Column>
-                            ))}
-                        </Row>
-                    </CardGroup>
-                </Row>
-                <Row>
-                    <CardGroup>
-                        <Row>
-                            <Column>
-                                <Deck 
-                                    remainingCards={remainingCards}
-                                ></Deck>
-                                {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
-                            </Column>
-                            <Column>
-                                <Card 
-                                    Card={trumpCard} 
-                                    uniqueID={`trump-card`}
-                                    origin={`deck`}
-                                ></Card>    
-                            </Column>
-                        </Row>
-                    </CardGroup>
-                    <CardGroup>
-                        <Row>
-                            {currentTrick.map((data, index) => (
-                                <Column id={`trick-column-${index}`}>
-                                    <Card 
-                                        Card={data}
-                                        uniqueID={`current-trick-card-${index+1}`}
-                                        origin={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
-                                        exit={{ scale: 0, opacity: 0, rotate: 180 }}
-                                    ></Card>
-                                </Column>
-                            ))}
-                        </Row>
-                    </CardGroup>
-                </Row>
-                <TurnStatus turnStatus={turnStatus}></TurnStatus>
-                <Row>
-                    <Score>
-                        <div>{playerName}</div>
-                        <div id="scoreDiv">Points: {playerPoints}</div>
-                    </Score>
-                    <CardGroup>
-                        <Row>
-                            {playerCards.map((data, index) => (
-                                <Column key={`card-column-${index}`}>
-                                    <div className="hover-effect" >
-                                        <Card 
-                                            Card={data} 
-                                            uniqueID={`player-card-${index+1}`} 
-                                            onClick={() => handleCardSelection(data, index)} 
-                                        ></Card>
-                                    </div>
-                                </Column>
-                            ))}
-                        </Row>
-                    </CardGroup>
-                </Row>
-            </Column>
-           </motion.div>
-        </Layout>
+        <Container fluid className='game-container'>
+            <Layout className='game-content'>
+                {isGameEnd ? renderGameEndScreen() : null}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <PlayerComponent name={opponentName} points={opponentPoints} cards={opponentCards}></PlayerComponent>
+                    <Row className="mt-4 mb-4">
+                        <Col xs={12} sm={12}>
+                                <Row className='g-0'>
+                                    <Col xs={6} sm={6}>
+                                        <Deck remainingCards={remainingCards}></Deck>
+                                    </Col>
+                                    {currentTrick.map((data, index) => (
+                                        <Col id={`trick-column-${index}`} xs={6} sm={6}>
+                                            <div style={{ display: 'flex', width: '100%' }} className=''>
+                                                <Card 
+                                                    Card={{ image:'https://deckofcardsapi.com/static/img/back.png' }}
+                                                    uniqueID={`current-trick-card-${index+1}`}
+                                                    origin={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
+                                                    exit={{ scale: 0, opacity: 0, rotate: 180 }}
+                                                >
+                                                </Card>
+                                            <div style={{ marginLeft: '5%'}}>
+                                               <Card 
+                                                    Card={{ image:'https://deckofcardsapi.com/static/img/back.png' }}
+                                                    uniqueID={`current-trick-card-${index+1}`}
+                                                    origin={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
+                                                    exit={{ scale: 0, opacity: 0, rotate: 180 }}
+                                                ></Card>
+                                            </div>
+                                            </div>
+
+                                        </Col>
+                                    ))}
+                                </Row>
+                        </Col>
+                    </Row>
+                    <TurnStatus turnStatus={turnStatus}></TurnStatus>
+                    <PlayerComponent name={playerName} points={playerPoints} cards={playerCards}></PlayerComponent>
+
+
+            </motion.div>
+            </Layout>
+        </Container>
         );
 }
 

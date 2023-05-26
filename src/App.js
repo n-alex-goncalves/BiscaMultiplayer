@@ -13,7 +13,7 @@ function App() {
       <AudioPlayer src="http://localhost:8000/background-music.mp3" />
       <BrowserRouter>
         <Routes>
-          <Route exact path="/" element={< CardGameBoard />} />
+          <Route exact path="/" element={< CreateGameForm />} />
           <Route path="/waiting/:roomID" element={< WaitingPage />} />
           <Route path="/game/:roomID" element={< CardGameBoard />} />
         </Routes>
