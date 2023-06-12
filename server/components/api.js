@@ -4,7 +4,6 @@ const api = axios.create({
     baseURL: 'https://deckofcardsapi.com/api/deck/'
 })
 
-// Initialize Game State
 const initializeGame = async (gameState) => {
     const deck = await createDeckID();
     const deckID = deck.deck_id;
@@ -23,7 +22,6 @@ const initializeGame = async (gameState) => {
 }
 
 
-// Create an empty Game State and return Game State
 const createGameState = (gameID) => {
     const MAX_CARDS = 40;
     return {
@@ -42,7 +40,7 @@ const createGameState = (gameID) => {
     };
 };
 
-// Create an empty Player State and return Player State
+
 const createPlayerState = (socketID) => {
     return { 
         socketID,
@@ -54,7 +52,7 @@ const createPlayerState = (socketID) => {
     }
 };
 
-// Create a Deck and return Deck
+
 const createDeckID = async () => {
     const cards = [
         'AS', '2S', '3S', '4S', '5S', '6S', '7S', 'JS', 'QS', 'KS'
@@ -76,7 +74,7 @@ const createDeckID = async () => {
     return data;
 };
 
-// Draw (count) number of cards from deck
+
 const Draw = async (deckID, count, socketID = null) => {
     const { data: response }  = await api.get(`${deckID}/draw/`, {
         params: {
@@ -84,7 +82,6 @@ const Draw = async (deckID, count, socketID = null) => {
         }
     })
 
-    // Card Ownership
     for (const card of response.cards) {
         card.cardOwnership = socketID;
     }
@@ -92,7 +89,7 @@ const Draw = async (deckID, count, socketID = null) => {
     return response;
 };
 
-// Return (array) cards to deck
+
 const Return = async (deckID, cards) => {
     const { data: response }  = await api.get(`${deckID}/return/`, {
         params: {
@@ -103,7 +100,7 @@ const Return = async (deckID, cards) => {
     return response;
 };
 
-// Calculate the winner and number of points of a trick
+
 const calculateTrickPoints = (cards, trumpSuit) => {
     let winningCard = cards[0];
     let total = getValue(cards[0]);
@@ -129,7 +126,7 @@ const calculateTrickPoints = (cards, trumpSuit) => {
     return { winnerID: winningCard.cardOwnership, points: total };
   };
   
-// Retrieve the bisca value of card based on its original value
+  
 const getValue = (card) => {
     switch (card.value) {
         case "ACE":

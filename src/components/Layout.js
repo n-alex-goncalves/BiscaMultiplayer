@@ -18,6 +18,7 @@ const Score = styled.div`
 `;
 
 const CardGroup = styled.div`
+  height: 100%;
   position: relative;
   z-index: auto;
   display: flex;
@@ -39,6 +40,7 @@ const CardContainer = styled.div`
   border-radius: 10px;
   margin: 0.25rem auto;
   box-shadow: 5px 5px;
+  transition: height 0.3s ease;
   flex: 1;
   &:hover {
     transform: ${props => props.isPlayer ? 'translateY(-10px)' : 'none'};

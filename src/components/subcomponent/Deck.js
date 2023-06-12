@@ -1,18 +1,23 @@
 import React from 'react';
-import Card from './Card'; // Import the Card component
+import Card from './Card';
+import { Row, Col } from 'react-bootstrap'
 import NoCardsRemainingMessage from './NoCardsRemaining';
+import '../../assets/Deck.css';
+import { CardGroup } from '../Layout.js';
 
-const Deck = ({ remainingCards }) => {
+const Deck = ({ remainingCards, trumpCard }) => {
   return (
-     <div>
+    <CardGroup className="p-4 h-100">
+      <Row>
         <div key={`deck-card-row`} id={'deck'} style={{ display: 'grid' }}>
-        <div style={{ display: 'flex', overflowY: 'visible', gridColumn: '1', marginLeft: '35%', gridRow: '1', width: '50%' }}>
-            <Card 
-                Card={{ image:'https://deckofcardsapi.com/static/img/back.png' }}
-                uniqueID={`current-trick-card-${1+1}`}
-                exit={{ scale: 0, opacity: 0, rotate: 180 }}
-                rotate={true}
-            ></Card>
+          <div className='grid-trump'>
+              <Card
+                  Card={trumpCard}
+                  uniqueID={`trump-card`}
+                  exit={{ scale: 0, opacity: 0, rotate: 180 }}
+                  rotate={true}
+                  origin={'deck'}
+              ></Card>
           </div>
           {Array.from({ length: Math.min(remainingCards, 5) }, (_, index) => {
             const offset = 1.5 * (index);
@@ -20,19 +25,21 @@ const Deck = ({ remainingCards }) => {
               <div key={`deck-card-column-${index+1}`} style={{ overflowY: 'visible', overflowX: 'auto', scrollbarWidth: 'none', width: `50%`, marginLeft: `${offset}vw`, gridColumn: '1', gridRow: '1' }}>
                 <Card
                   key={`deck-card-${index+1}`}
-                  Card={{ image:'https://deckofcardsapi.com/static/img/back.png' }}
+                  Card={{ image: 'https://deckofcardsapi.com/static/img/back.png' }}
                   uniqueID={`deck-card-${index+1}`}
                 />
               </div>
             );
           })}
         </div>
-        {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
-      </div>
-
+      </Row>
+    </CardGroup>
   );
 }
 
+// deck-card-row
+// grid-trump-card
+//         {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}        {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
 
 export default Deck;
 

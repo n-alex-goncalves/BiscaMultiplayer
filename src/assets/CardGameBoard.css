@@ -27,19 +27,19 @@
 
     /* CSS for Your Turn */
   .your-turn {
+    font-size: 20px;
     background-color: #28a745; /* Green background color */
     color: #fff; /* White text color */
-    width: 200px;
     height: auto;
     border-radius: 10px;
   }
 
   /* CSS for Opponent's Turn */
   .opponent-turn {
+    font-size: 20px;
     background-color: #dc3545; /* Red background color */
     color: #fff; /* White text color */
-    width: 200px;
-    border-radius: 30px;
+    border-radius: 10px;
   }
 
   /* Add the score-animation class for the animation */
@@ -72,9 +72,6 @@
   overflow: hidden;
   background-color: rgb(54, 147, 54);
   /* Your other styles */
-}
-
-.game-content {
 }
 
 @media (min-width: 0px) { /* Medium screens (md) and above */

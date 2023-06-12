@@ -1,0 +1,8 @@
+.grid-trump {
+    display: flex;
+    overflow-y: visible;
+    margin-left: 35%;
+    width: 50%;
+    grid-column: 1;
+    grid-row: 1;
+}
