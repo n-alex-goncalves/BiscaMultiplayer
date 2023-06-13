@@ -11,6 +11,7 @@ import Deck from './subcomponent/Deck';
 import PlayerComponent from './subcomponent/PlayerComponent';
 import TurnStatus from './subcomponent/TurnStatus';
 import GameOver from './subcomponent/GameOver';
+import NoCardsRemainingMessage from './subcomponent/NoCardsRemaining.js';
 import socket from '../socket.js';
 
 const CardGameBoard = () => {
@@ -69,6 +70,7 @@ const CardGameBoard = () => {
                 setCurrentTrick(currentTrick);
                 setTurnStatus(turnStatus);
                 
+                console.log(currentTrick)
                 const newHeight = componentRef.current.scrollHeight;
                 setHeight(newHeight);
             }
@@ -103,8 +105,9 @@ const CardGameBoard = () => {
 
     return (
         <Container fluid className='game-container'>
+            {isGameEnd ? renderGameEndScreen() : null}
+                {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
             <Layout className='game-content'>
-                {isGameEnd ? renderGameEndScreen() : null}
                 <motion.div
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -115,18 +118,19 @@ const CardGameBoard = () => {
                     <Row>
                         <Col xs={12} sm={12}>
                                 <Row className='g-3 h-100'>
-                                    <Col className='h-100' id={`deck-column`} xs={7} sm={6}>
+                                    <Col className='h-100' id={`deck-column`} xs={6} sm={6}>
                                         <Deck remainingCards={remainingCards} trumpCard={trumpCard}></Deck>
                                     </Col>
-                                    <Col className='h-100' id={`trick-column`} xs={7} sm={6}>
-                                        <CardGroup className="p-4 h-100" ref={componentRef} style={{ height: `${height}px` }}>
-                                            <Row>
+                                    <Col className='h-100' id={`trick-column`} xs={6} sm={6}>
+                                        <CardGroup className="px-3 p-md-4 h-100" ref={componentRef} style={{ display: 'flex' }}>
+                                            <Row className='g-2 g-md-3'>
                                                 {currentTrick.map((data, index) => (
                                                     <Col key={`card-column-${index}`}>
                                                         <Card 
-                                                            Card={data}
-                                                            uniqueID={`current-trick-card-${index+1}`}
-                                                            origin={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
+                                                            cardID={`current-trick-card-${index+1}`}
+                                                            cardData={data}
+                                                            exitAnimation={{ scale: 0, opacity: 0, rotate: 180 }}
+                                                            animateFrom={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
                                                         ></Card>
                                                     </Col>
                                                 ))}

@@ -29,7 +29,6 @@ const GameOver = ({playerState, opponentState, winnerName}) => {
   }
 
   return (
-    <Layout>
         <AnimatePresence>
             <motion.div
                 className='background'
@@ -51,7 +50,7 @@ const GameOver = ({playerState, opponentState, winnerName}) => {
                         >
                             <Column>
                                 <Row></Row>
-                                <Row>
+                                <Row className='g-3'>
                                     <motion.p
                                         className='game-title'
                                         initial={{ y: 200 }}
@@ -108,7 +107,6 @@ const GameOver = ({playerState, opponentState, winnerName}) => {
                 </Column>
             </motion.div>
         </AnimatePresence>
-    </Layout>
   );
 };
 

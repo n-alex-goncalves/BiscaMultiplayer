@@ -15,6 +15,7 @@ const Score = styled.div`
   border: 3px solid #262722;
   justify-content: center;
   text-align: center;
+  margin-bottom: 25px;
 `;
 
 const CardGroup = styled.div`
@@ -27,7 +28,6 @@ const CardGroup = styled.div`
   flex-direction: column;
   background-color: green;
   border-radius: 8px;
-  display: block;
   overflow: visible;
 `;
 

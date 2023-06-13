@@ -32,9 +32,9 @@ const PlayerComponent = ({ name, points, cards, isPlayer }) => {
                         {cards.map((data, index) => (
                             <Col key={`card-column-${index}`}>
                                 <Card
-                                    Card={ isPlayer ? data : data && { image: 'https://deckofcardsapi.com/static/img/back.png' }  }
-                                    uniqueID={ isPlayer ? `player-card-${index+1}` : `opponent-card-${index+1}`}
-                                    onClick={isPlayer ? () => handleCardSelection(data, index) : () => {} } 
+                                    cardID={ isPlayer ? `player-card-${index+1}` : `opponent-card-${index+1}`}
+                                    cardData={ isPlayer ? data : data && { image: 'https://deckofcardsapi.com/static/img/back.png' }  }
+                                    onClick={ isPlayer ? () => handleCardSelection(data, index) : () => {} } 
                                 ></Card>
                             </Col>
                         ))}

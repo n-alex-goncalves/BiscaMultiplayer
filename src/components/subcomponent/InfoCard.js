@@ -19,6 +19,7 @@ const InfoCard = ({ playerName, points, cardsWon }) => {
         open: {
           height: '410px',
           width: '350px',
+          paddingTop: '10px',
           transition: {type: "spring", stiffness: 200, damping: 17 }
         }
     };    
@@ -32,14 +33,13 @@ const InfoCard = ({ playerName, points, cardsWon }) => {
         >
             {!isOpen && <motion.h2 style={{ color: 'white', zIndex: '9999' }} initial={{ opacity: 1 }} exit={{ opacity: 0 }}>{playerName}</motion.h2>}
             <motion.div
-                className='endCard'
                 style={{
-                    width: '200px',
+                    width: '170px',
                     height: '90px',
                     marginTop: '20px',
                     backgroundColor: 'white',
                     borderRadius: '5px',
-                    padding: '5px 12px',
+                    padding: '26px 12px',
                 }}
                 variants={variants}
                 whileHover='open'
@@ -48,7 +48,7 @@ const InfoCard = ({ playerName, points, cardsWon }) => {
                 onMouseEnter={handleOpen}
                 onMouseLeave={handleOpen}
             >
-                <motion.h2>POINTS: {points}</motion.h2>
+                <h2>POINTS: {points}</h2>
                 {isOpen && (<ImageGrid images={cardsWon}></ImageGrid>)}
             </motion.div>
         </motion.div>

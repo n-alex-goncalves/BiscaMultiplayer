@@ -10,6 +10,7 @@ body {
   padding: 10px;
   border-radius: 50%;
   border: black;
+  z-index: 9999;
   transition: background-color 0.2s;
 }
 
@@ -22,19 +23,3 @@ body {
   width: 100%;
   height: 100%;
 }
-
-  
-/**
-
-  return (
-    <div className="audio-container">
-      <audio ref={audioRef} autoPlay loop={isPlaying}>
-        <source src={src} type="audio/mpeg" />
-      </audio>
-      <button className="audio-toggle" onClick={toggleAudio}>
-        {isPlaying ? <FontAwesomeIcon icon={faVolumeUp} /> : <FontAwesomeIcon icon={faVolumeMute} />}
-      </button>
-    </div>
-  );
-};
-**/
