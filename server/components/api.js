@@ -30,7 +30,6 @@ const createGameState = (gameID) => {
         board: { 
             deckID: null,
             trumpCard: null,
-            temporaryTrumpCard: null,
             remainingCards: MAX_CARDS,
             currentTrick: [null, null]
         },
@@ -81,11 +80,10 @@ const Draw = async (deckID, count, socketID = null) => {
             count: count
         }
     })
-
     for (const card of response.cards) {
         card.cardOwnership = socketID;
+        card.isVisible = true;
     }
-    
     return response;
 };
 
@@ -96,7 +94,6 @@ const Return = async (deckID, cards) => {
             cards: cards.join(',')
         }
     })
-
     return response;
 };
 
@@ -104,19 +101,16 @@ const Return = async (deckID, cards) => {
 const calculateTrickPoints = (cards, trumpSuit) => {
     let winningCard = cards[0];
     let total = getValue(cards[0]);
-    // Iterate through cards (trick)
+
     for (let i = 1; i < cards.length; i++) {
         const currentCard = cards[i];
-        // If both cards are the same suit
         if (currentCard.suit === winningCard.suit) {
             if (getValue(currentCard) > getValue(winningCard)) {
                 winningCard = currentCard;
             }
         } else if (currentCard.suit === trumpSuit) {
-            // If currentCard is the same suit as the trumpCard
             winningCard = currentCard;
         } else if (winningCard.suit !== trumpSuit) {
-            // If neither card is trump and they are of different suits, compare by suit/value of first card played
             if (currentCard.suit === cards[0].suit && getValue(currentCard) > getValue(winningCard)) {
                 winningCard = currentCard;
             }   
@@ -144,4 +138,5 @@ const getValue = (card) => {
     }
 };
 
-module.exports = { initializeGame, createGameState, createPlayerState, Draw, Return, calculateTrickPoints, getValue }
+
+module.exports = { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return }

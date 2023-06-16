@@ -18,7 +18,6 @@ const CardGameBoard = () => {
 
     const { roomID } = useParams();
 
-    const [height, setHeight] = useState(0);
     const componentRef = useRef(null);
   
     const [playerState, setPlayerState] = useState(null);
@@ -69,10 +68,6 @@ const CardGameBoard = () => {
                 setRemainingCards(remainingCards);
                 setCurrentTrick(currentTrick);
                 setTurnStatus(turnStatus);
-                
-                console.log(currentTrick)
-                const newHeight = componentRef.current.scrollHeight;
-                setHeight(newHeight);
             }
 
             socket.on('getWinningStateResponse', (response) => { 
@@ -106,7 +101,7 @@ const CardGameBoard = () => {
     return (
         <Container fluid className='game-container'>
             {isGameEnd ? renderGameEndScreen() : null}
-                {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
+            {remainingCards === 0 && <NoCardsRemainingMessage duration={1500}/>}
             <Layout className='game-content'>
                 <motion.div
                     initial={{ opacity: 0, scale: 0 }}
@@ -129,7 +124,7 @@ const CardGameBoard = () => {
                                                         <Card 
                                                             cardID={`current-trick-card-${index+1}`}
                                                             cardData={data}
-                                                            exitAnimation={{ scale: 0, opacity: 0, rotate: 180 }}
+                                                            exitAnimation={{ scale: 1, opacity: 1, y: turnStatus === 'YourTurn' ? '100vh' : '-100vh' }}
                                                             animateFrom={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
                                                         ></Card>
                                                     </Col>

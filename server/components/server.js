@@ -1,4 +1,4 @@
-const { initializeGame, createGameState, createPlayerState, Draw, Return, calculateTrickPoints } = require('./api.js');
+const { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return } = require('./api.js');
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
@@ -114,18 +114,18 @@ io.on('connection', (socket) => {
     socket.emit("getGameStateResponse", { gameState: gameState, success: true });
   });
 
-  // Evnet handler for when a card is selected
+  // Event handler for when a card is selected
   socket.on("onCardSelected", async (data) => {
     const { card, index, gameID } = data;
+    
     const gameState = games[gameID];
     const boardState = gameState.board;
-
     const deckID = gameState.board.deckID;
     const currentTurnIndex = gameState.currentTurnIndex;
     const socketPlayerIndex = gameState.turnOrder.indexOf(socket.id);
 
     if (socketPlayerIndex !== gameState.currentTurnIndex || gameState.board.currentTrick.every((card) => card !== null)) {
-      console.log('ERROR NOT PLAYER TURN')
+      console.error('ERROR NOT PLAYER TURN')
       return;
     }
     
@@ -139,98 +139,100 @@ io.on('connection', (socket) => {
     newTrick[currentTurnIndex] = { ...card, index: index };
 
     let newTrumpCard = gameState.board.trumpCard;
-    let newTemporaryTrumpCard = gameState.board.temporaryTrumpCard;
     let newRemainingCards = gameState.board.remainingCards;
-    let newTurnIndex = (gameState.currentTurnIndex + 1) % Object.keys(gameState.players).length;
+    let newTurnIndex = (newTrick.every((card) => card !== null)) ? gameState.currentTurnIndex : (gameState.currentTurnIndex + 1) % Object.keys(gameState.players).length;
 
-    if (newTrick.every((card) => card !== null)) {
-      newTurnIndex = (gameState.currentTurnIndex) % Object.keys(gameState.players).length; 
-
-      setTimeout(async () => {
-        const trumpCard = newTemporaryTrumpCard || newTrumpCard;
-        const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
-
-        newPlayers[winnerID] = { ...newPlayers[winnerID], score: newPlayers[winnerID].score + points, cardsWon: newPlayers[winnerID].cardsWon.concat(newTrick) };
-
-        const winnerIndex = Object.entries(newPlayers).findIndex(([playerID]) => playerID === winnerID);
-        const playersArray = Object.entries(newPlayers);
-        const reorderedPlayers = playersArray.slice(winnerIndex).concat(playersArray.slice(0, winnerIndex));
-        
-        for (const [playerID, newPlayer] of reorderedPlayers) {
-
-          const nullIndex = newPlayer.hand.findIndex(card => card === null);
-
-          if (newRemainingCards == 0 && newTrumpCard !== null) {
-            await Return(deckID, [newTrumpCard.code]);
-            newTemporaryTrumpCard = newTrumpCard;
-            newTrumpCard = null;
-          }
-
-          if (nullIndex !== -1) {
-            const response = await Draw(deckID, 1, playerID);    
-
-            newRemainingCards = response.remaining;
-
-            newPlayer.hand[nullIndex] = response.cards[0];
-          }
-        }
-
-        newTrick.fill(null);
-
-        newTurnIndex = gameState.turnOrder.indexOf(winnerID);
-        
-        const newBoardState = {
-          ...boardState,
-          trumpCard: newTrumpCard,
-          temporaryTrumpCard: newTemporaryTrumpCard,
-          remainingCards: newRemainingCards,
-          currentTrick: newTrick
-        }
-
-        const newGameState = {
-          ...gameState,
-          board: newBoardState,
-          players: newPlayers,
-          currentTurnIndex: newTurnIndex
-        }
-    
-        games[gameID] = newGameState;
-    
-        io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });
-
-        const players = Object.values(newGameState.players);
-        if (players.every(player => player.hand?.every(card => card == null))) {
-          io.to(gameID).emit('getWinningStateResponse', { gameState: gameState, winner: socket.id, success: true });
-          return;
-        }
-      }, 2000);
-    }
-
-    const newBoardState = {
+    const ongoingBoardState = {
       ...boardState,
       trumpCard: newTrumpCard,
-      temporaryTrumpCard: newTemporaryTrumpCard,
       remainingCards: newRemainingCards,
       currentTrick: newTrick
     }
 
-    const newGameState = {
+    const ongoingGameState = {
       ...gameState,
-      board: newBoardState,
+      board: ongoingBoardState,
       players: newPlayers,
       currentTurnIndex: newTurnIndex
     }
 
-    games[gameID] = newGameState;
-    
-    io.to(gameID).emit('getGameStateResponse', { gameState: newGameState, success: true });
+    games[gameID] = ongoingGameState;
+    io.to(gameID).emit('getGameStateResponse', { gameState: ongoingGameState, success: true });
+
+    if (newTrick.every((card) => card !== null)) {      
+      const delay = (ms) => {
+        return new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
+      };
+
+      const updateGameState = async () => {
+        const trumpCard = newTrumpCard;
+        const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
+        
+        newPlayers[winnerID] = {
+          ...newPlayers[winnerID],
+          score: newPlayers[winnerID].score + points,
+          cardsWon: newPlayers[winnerID].cardsWon.concat(newTrick)
+        };
+      
+        const winnerIndex = Object.entries(newPlayers).findIndex(([playerID]) => playerID === winnerID);
+        const playersArray = Object.entries(newPlayers);
+        const reorderedPlayers = playersArray.slice(winnerIndex).concat(playersArray.slice(0, winnerIndex));
+        let nullIndex;
+
+        // For each player, draw a new card
+        for (const [playerID, newPlayer] of reorderedPlayers) {
+          nullIndex = newPlayer.hand.findIndex(card => card === null);
+          if (newRemainingCards === 0 && newTrumpCard?.isVisible === true) {
+            await Return(deckID, [newTrumpCard.code]);
+            newTrumpCard.isVisible = false;
+          }
+          if (nullIndex !== -1) {
+            const response = await Draw(deckID, 1, playerID);    
+            newRemainingCards = response.remaining;
+            newPlayer.hand[nullIndex] = response.cards[0];
+          }
+        }
+      
+        newTurnIndex = gameState.turnOrder.indexOf(winnerID);
+        
+        io.to(gameID).emit('getGameStateResponse', { gameState: { ...ongoingGameState, currentTurnIndex: newTurnIndex }, success: true });
+
+        newTrick.fill(null);
+
+        const completeBoardState = {
+          ...ongoingBoardState,
+          trumpCard: newTrumpCard,
+          remainingCards: newRemainingCards,
+          currentTrick: newTrick
+        };
+        
+        const completeGameState = {
+          ...ongoingGameState,
+          board: completeBoardState,
+          players: newPlayers,
+          currentTurnIndex: newTurnIndex
+        };
+        
+        games[gameID] = completeGameState;
+        io.to(gameID).emit('getGameStateResponse', { gameState: completeGameState, success: true });
+        
+        if (Object.values(completeGameState.players).every(player => player.hand?.every(card => card == null))) {
+          io.to(gameID).emit('getWinningStateResponse', { gameState: completeGameState, winner: socket.id, success: true });
+          return;
+        }
+      };      
+ 
+      await delay(1500);
+      await updateGameState();
+    }
   });
 
   // Event handler for when a socket disconnects
   socket.on('disconnect', () => {
     const gameID = socketToGameMap[socket.id];
     const gameState = games[gameID];
-
     if (gameID) {
       delete games[gameID].players[socket.id]
       if (Object.keys(gameState.players).length == 0) {
@@ -238,7 +240,6 @@ io.on('connection', (socket) => {
       }
       delete socketToGameMap[socket.id];
     }
-
     console.log(`Socket ${socket.id} disconnected.`);
   });
 });
@@ -248,3 +249,9 @@ const port = process.env.PORT || 8000;
 server.listen(port, '0.0.0.0', () => {
   console.log(`Server is listening on port ${port}`);
 });
+
+/*
+
+
+
+*/

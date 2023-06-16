@@ -23,7 +23,7 @@ const Deck = ({ remainingCards, trumpCard }) => {
               <div key={`deck-card-column-${index+1}`} style={{ overflowY: 'visible', overflowX: 'auto', scrollbarWidth: 'none', width: `50%`, marginLeft: `${offset}vw`, gridColumn: '1', gridRow: '1' }}>
                 <Card
                   cardID={`deck-card-${index+1}`}
-                  cardData={{ image: 'https://deckofcardsapi.com/static/img/back.png' }}
+                  cardData={{ image: 'https://deckofcardsapi.com/static/img/back.png', isVisible: true }}
                 />
               </div>
             );

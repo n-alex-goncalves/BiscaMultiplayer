@@ -33,8 +33,8 @@ const PlayerComponent = ({ name, points, cards, isPlayer }) => {
                             <Col key={`card-column-${index}`}>
                                 <Card
                                     cardID={ isPlayer ? `player-card-${index+1}` : `opponent-card-${index+1}`}
-                                    cardData={ isPlayer ? data : data && { image: 'https://deckofcardsapi.com/static/img/back.png' }  }
-                                    onClick={ isPlayer ? () => handleCardSelection(data, index) : () => {} } 
+                                    cardData={ isPlayer ? data : data && { image: 'https://deckofcardsapi.com/static/img/back.png', isVisible: true }  }
+                                    onClick={ isPlayer ? () => handleCardSelection(data, index) : () => {} }
                                 ></Card>
                             </Col>
                         ))}
