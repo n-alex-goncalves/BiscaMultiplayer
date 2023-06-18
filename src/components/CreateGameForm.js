@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Container, Form, Button, Accordion, Image } from 'react-bootstrap'
 
 import DOMPurify from 'dompurify';
@@ -149,7 +149,15 @@ const CreateGameForm = () => {
       },
       {
         title: 'ACKNOWLEDGEMENTS & CREDITS',
-        content: `background music?`,
+        content: `Below are some of the technologies/resources/inspirations used to build the project. Thanks go to the following:<br><br>
+        - <b>freepd</b>: Free-public domain music used. (The music can be found at: https://freepd.com/misc.php)<br>
+        - <b>Node.js</b>: An open-source JavaScript runtime environment.<br>
+        - <b>React</b>: A popular JavaScript library for building user interfaces.<br>
+        - <b>React Bootstrap</b>: A front-end framework for React.<br>
+        - <b>Framer Motion</b>: A powerful animation library for React.<br>
+        - <b>Deck of Cards API</b>: An API that provides a deck of cards objects.<br>
+        - <b>font-awesome</b>: An icon library toolkit for CSS.<br>
+        - <b>oombi.io</b>: A well-designed multiplayer game that inspired this project.<br>`
       }
     ];
 
@@ -214,18 +222,21 @@ const CreateGameForm = () => {
             HOW TO PLAY
           </Button>
         </Form>
+        
+        <AnimatePresence>
+          {showHelpMessage && (
+            <motion.div
+              className='full-screen-box overflow-auto'
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 17 }}
+            >
+              <AccordionMenu></AccordionMenu>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {showHelpMessage && (
-          <motion.div
-            className='full-screen-box overflow-auto'
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 17 }}
-          >
-            <AccordionMenu></AccordionMenu>
-          </motion.div>
-        )}
         {showErrorMessage && (<div className="notification-alert notification-alert--error">{errorMessage}</div>)}
       </motion.div>
     </Container>
@@ -233,72 +244,3 @@ const CreateGameForm = () => {
 }
 
 export default CreateGameForm;
-
-/**
-
-Ace                                        11 Points
-Seven (a.k.a Bisca)                        10 Points
-King                                        4 Points
-Jack                                        3 Points
-Queen                                       2 Points
-The rest of the cards (6, 5, 4, ...)        1 Points
-
-
-Each player draws three cards, and one other card is drawn as the trump card.
-
-The trump card defines the suit that can win any trick. By playing a card of the
-same suit as the trump card, anyone can win any trick.
-
-If both players play the same suit however, the player with the highest value card wins the 
-trick. 
-
-If neither player plays the trump suit, and both players play a card with a different suit, 
-the first player wins the trick.
-
-The points system is shown to the left. Remember! The game is played with only a 40-card deck, so
-all the 8s, 9s and 10s are removed.
-
-
-
-Each player draws three cards from the deck, and one additional card is drawn as the trump card.
-
-The trump card determines the suit that can win any trick. This means that if you play a card of the same suit as the trump card and your opponent does not, you win the trick.
-
-If both players play cards of the same suit, the player with the highest value card of that suit wins the trick (note that this includes the trump card).
-
-If neither player plays a card of the trump suit, and both players play cards of different suits, the first player who played a card wins the trick.
-
-The points system for the game is shown on the left. 
-
-INTRODUCTION
-
-Bisca is a popular card game that originated in Portugal and is played in many other
-countries such as Spain, Italy, Cape Verde, Angola, etc. The game
-is similar to the Italian Briscola or the Spanish Brisca.
-
-The origins of Bisca are uncertain, but it is believed to have evolved from the earlier Italian 
-card game, Briscola, during a period of cultural exchange between the two countires.
-
-Bisca is played with a 40 card-deck, and the aim is to achieve as many points from card tricks as possible. 
-The points system is described in the following sections.
-
-
-The primary goal is to get the most valuable card tricks possible. A trick are the
-cards played onto the board.
-
-The points system is as follows:
-
-
-
-
-- Bisca is a Portuguese card trick game
-- Similar to Italian Briscola or the variant Sueca.
-  
-- each player is dealt 3 cards and one card is the trup card.
-
-- A trick is the 
-
-- Each individual player should aim to win card tricks
-- The value of the points are 
-
- */

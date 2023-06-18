@@ -9,3 +9,12 @@
     height: 100%;
     object-fit: cover;
   }
+
+  .grid-box {
+    width: auto;
+    height: auto;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 5px;
+    padding: 26px 12px;
+  }

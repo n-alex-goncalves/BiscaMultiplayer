@@ -6,15 +6,11 @@ import { Score, CardGroup } from '../Layout.js';
 import Card from './Card';
 import socket from '../../socket.js';
 
-const PlayerComponent = ({ name, points, cards, isPlayer }) => {
+const PlayerComponent = ({ playerName, playerPoints, playerCards, isPlayer }) => {
     const { roomID } = useParams();
 
     const handleCardSelection = (card, index) => {
-        const data = {
-            card: card,
-            index: index,
-            gameID: roomID,
-        }
+        const data = { card: card, index: index, gameID: roomID }
         socket.emit('onCardSelected', data);
     }
 
@@ -22,18 +18,18 @@ const PlayerComponent = ({ name, points, cards, isPlayer }) => {
         <Row className="align-items-center p-4 mt-4">
             <Col> 
                 <Score>
-                    <div>{name}</div>
-                    <div>Points: {points}</div>
+                    <div>{playerName}</div>
+                    <div>Points: {playerPoints}</div>
                 </Score>
             </Col>
             <Col xs={12} sm={9}>
                 <CardGroup className="p-4">
                     <Row>
-                        {cards.map((data, index) => (
+                        {playerCards.map((data, index) => (
                             <Col key={`card-column-${index}`}>
                                 <Card
                                     cardID={ isPlayer ? `player-card-${index+1}` : `opponent-card-${index+1}`}
-                                    cardData={ isPlayer ? data : data && { image: 'https://deckofcardsapi.com/static/img/back.png', isVisible: true }  }
+                                    cardData={ isPlayer ? data : data && { image: 'https://deckofcardsapi.com/static/img/back.png', isVisible: true } }
                                     onClick={ isPlayer ? () => handleCardSelection(data, index) : () => {} }
                                 ></Card>
                             </Col>

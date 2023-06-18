@@ -198,7 +198,7 @@ io.on('connection', (socket) => {
         newTurnIndex = gameState.turnOrder.indexOf(winnerID);
         
         io.to(gameID).emit('getGameStateResponse', { gameState: { ...ongoingGameState, currentTurnIndex: newTurnIndex }, success: true });
-
+  
         newTrick.fill(null);
 
         const completeBoardState = {
@@ -249,9 +249,3 @@ const port = process.env.PORT || 8000;
 server.listen(port, '0.0.0.0', () => {
   console.log(`Server is listening on port ${port}`);
 });
-
-/*
-
-
-
-*/

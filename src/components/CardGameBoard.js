@@ -33,7 +33,6 @@ const CardGameBoard = () => {
     const [trumpCard, setTrumpCard] = useState(null);
     const [remainingCards, setRemainingCards] = useState(null);
     const [currentTrick, setCurrentTrick] = useState([null, null]); 
-
     const [turnStatus, setTurnStatus] = useState(null);
     const [isGameEnd, setIsGameEnd] = useState(false);
 
@@ -109,7 +108,7 @@ const CardGameBoard = () => {
                     exit={{ opacity: 0, scale: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <PlayerComponent name={opponentName} points={opponentPoints} cards={opponentCards} isPlayer={false}></PlayerComponent>
+                    <PlayerComponent playerName={opponentName} playerPoints={opponentPoints} playerCards={opponentCards} isPlayer={false}></PlayerComponent>
                     <Row>
                         <Col xs={12} sm={12}>
                                 <Row className='g-3 h-100'>
@@ -140,7 +139,7 @@ const CardGameBoard = () => {
                             <TurnStatus turnStatus={turnStatus}></TurnStatus>
                         </Col>
                     </Row>
-                    <PlayerComponent name={playerName} points={playerPoints} cards={playerCards} isPlayer={true}></PlayerComponent>
+                    <PlayerComponent playerName={playerName} playerPoints={playerPoints} playerCards={playerCards} isPlayer={true}></PlayerComponent>
             </motion.div>
             </Layout>
         </Container>

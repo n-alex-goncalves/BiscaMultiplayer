@@ -53,17 +53,17 @@ const createPlayerState = (socketID) => {
 
 
 const createDeckID = async () => {
+    /*
     const cards = [
         'AS', '2S', '3S', '4S', '5S', '6S', '7S', 'JS', 'QS', 'KS'
     ];
-    /*
+    */
     const cards = [
         'AS', '2S', '3S', '4S', '5S', '6S', '7S', 'JS', 'QS', 'KS',
         'AD', '2D', '3D', '4D', '5D', '6D', '7D', 'JD', 'QD', 'KD',
         'AC', '2C', '3C', '4C', '5C', '6C', '7C', 'JC', 'QC', 'KC',
         'AH', '2H', '3H', '4H', '5H', '6H', '7H', 'JH', 'QH', 'KH'
     ];
-    */
     const { data } = await api.get('new/shuffle/', {
         params: {
             cards: cards.join(','),
@@ -100,43 +100,60 @@ const Return = async (deckID, cards) => {
 
 const calculateTrickPoints = (cards, trumpSuit) => {
     let winningCard = cards[0];
-    let total = getValue(cards[0]);
-
+    let total = getPoints(cards[0]);
     for (let i = 1; i < cards.length; i++) {
-        const currentCard = cards[i];
+        let currentCard = cards[i];
         if (currentCard.suit === winningCard.suit) {
-            if (getValue(currentCard) > getValue(winningCard)) {
+            if (getFaceNumber(currentCard) > getFaceNumber(winningCard)) {
                 winningCard = currentCard;
             }
         } else if (currentCard.suit === trumpSuit) {
             winningCard = currentCard;
         } else if (winningCard.suit !== trumpSuit) {
-            if (currentCard.suit === cards[0].suit && getValue(currentCard) > getValue(winningCard)) {
+            if (currentCard.suit === cards[0].suit && getFaceNumber(currentCard) > getFaceNumber(winningCard)) {
                 winningCard = currentCard;
             }   
         }
-        total += getValue(currentCard);
+        total += getPoints(currentCard);
     }
     return { winnerID: winningCard.cardOwnership, points: total };
   };
   
   
-const getValue = (card) => {
+const getPoints = (card) => {
     switch (card.value) {
         case "ACE":
             return 11;
+        case "7": // Bisca
+            return 10;
         case "KING":
             return 4;
         case "JACK":
             return 3;
         case "QUEEN":
             return 2;
-        case "7": // Bisca
-            return 10;
         default: // Palha
             return 0;
     }
 };
+
+const getFaceNumber = (card) => {
+    switch (card.value) {
+        case "ACE":
+            return 15;
+        case "7": // Bisca
+            return 14;
+        case "KING":
+            return 13;
+        case "JACK":
+            return 12;
+        case "QUEEN":
+            return 11;
+        default: // Palha
+            return parseInt(card.value);
+    }
+};
+
 
 
 module.exports = { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return }
