@@ -6,7 +6,7 @@ import { Container, Form, Button, Accordion, Image } from 'react-bootstrap'
 import DOMPurify from 'dompurify';
 import '../assets/CreateGameForm.css';
 
-import image01 from '../img/bisca_point_system.png'
+import bisca_point_img from '../img/bisca_point_system.png'
 import socket from '../socket.js';
 
 const CreateGameForm = () => {
@@ -136,7 +136,7 @@ const CreateGameForm = () => {
         If neither player plays a card of the trump suit, and both players play cards of different suits, the first player who played a card wins the trick.
         <br><br>
         The points system for the game is shown above.`,
-        image: image01,
+        image: bisca_point_img,
       },
       {
         title: 'TACTICS',
