@@ -57,7 +57,12 @@ app.get('*', function(req, res) {
 });
 
 const server = http.createServer(app);
-const io = require('socket.io')(server, { cors: { origin: '*', }, });
+
+const io = require('socket.io')(server, { 
+  cors: { 
+    origin: ["*", "*:*", "https://bisca-multiplayer.onrender.com", "https://bisca-multiplayer.onrender.com:*", 'https://bisca-multiplayer.onrender.com:8000']
+  }
+});
 
 const games = {};
 const socketToGameMap = {};
@@ -274,14 +279,8 @@ io.on('connection', (socket) => {
   });
 });
 
-
 const port = process.env.PORT || 8000;
+
 server.listen(port, '0.0.0.0', () => {
   console.log(`Server is listening on port ${port}`);
 });
-
-/*
-
-
-
-*/

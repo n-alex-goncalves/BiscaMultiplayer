@@ -79,7 +79,7 @@ const CardGameBoard = () => {
                     const opponentState = gameState.players[opponentID];
                     setOpponentState(opponentState)
                     setIsGameEnd(true);
-                    
+
                     socket.emit('gameEnd', {});
                 }
             });
