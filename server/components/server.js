@@ -12,6 +12,25 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, '../build')));
+
+app.use(express.static('build', { 
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+app.use('/static/js', express.static(path.join(__dirname, '../build/static/js'), {
+  setHeaders: function (res, path) {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
 // Define a route that serves mp3 file
 app.get('/background-music.mp3', (req, res) => {
   const filePath = path.resolve(__dirname, '../audio/background-music.mp3');
@@ -24,6 +43,17 @@ app.get('/placeholder.png', (req, res) => {
   const filePath = path.resolve(__dirname, '../audio/placeholder.png');
   res.setHeader('Content-Type', 'image/png');
   res.sendFile(filePath);
+});
+
+// Define a route that serves the index.html file
+//__dirname : It will resolve to your project folder
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+});
+
+// Catch-all route that serves the index.html file for any other routes
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
 const server = http.createServer(app);
