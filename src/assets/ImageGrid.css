@@ -8,7 +8,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-<<<<<<< HEAD
   }
 
   .grid-box {
@@ -18,6 +17,4 @@
     background-color: white;
     border-radius: 5px;
     padding: 26px 12px;
-=======
->>>>>>> 3048171874dbd75e4d32f1cb42da8ffd2343c235
   }

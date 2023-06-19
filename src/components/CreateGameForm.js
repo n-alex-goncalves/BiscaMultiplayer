@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
 import { AnimatePresence, motion } from "framer-motion";
-=======
-import { motion } from "framer-motion";
->>>>>>> 3048171874dbd75e4d32f1cb42da8ffd2343c235
 import { Container, Form, Button, Accordion, Image } from 'react-bootstrap'
 
 import DOMPurify from 'dompurify';
@@ -257,6 +253,8 @@ King                                        4 Points
 Jack                                        3 Points
 Queen                                       2 Points
 The rest of the cards (6, 5, 4, ...)        1 Points
+
+https://levelup.gitconnected.com/top-heroku-alternatives-73a758af8282
 
 
 Each player draws three cards, and one other card is drawn as the trump card.
