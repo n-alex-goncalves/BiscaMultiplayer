@@ -6,7 +6,7 @@ import { Container, Form, Button, Accordion, Image } from 'react-bootstrap'
 import DOMPurify from 'dompurify';
 import '../assets/CreateGameForm.css';
 
-import bisca_point_img from '../img/bisca_point_system.png'
+import bisca_point_img from '../img/bisca_point_system.PNG'
 import socket from '../socket.js';
 
 const CreateGameForm = () => {
