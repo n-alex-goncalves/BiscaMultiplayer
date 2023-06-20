@@ -58,12 +58,17 @@ app.get('*', function(req, res) {
 
 const server = http.createServer(app);
 
+/*
 const io = require('socket.io')(server, { 
   cors: { 
     origin: ["*", "*:*", "https://bisca-multiplayer.onrender.com", "https://bisca-multiplayer.onrender.com:*", 'https://bisca-multiplayer.onrender.com:8000']
   }
 });
+*/
 
+const io = require('socket.io')(server, { 
+  cors: { origin: "*" }
+});
 
 const games = {};
 const socketToGameMap = {};

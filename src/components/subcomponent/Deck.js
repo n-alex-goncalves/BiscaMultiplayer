@@ -1,9 +1,10 @@
 import React from 'react';
 import Card from './Card';
-import { Row, Col } from 'react-bootstrap'
-import NoCardsRemainingMessage from './NoCardsRemaining';
-import '../../assets/Deck.css';
+
+import { Row } from 'react-bootstrap';
 import { CardGroup } from '../Layout.js';
+
+import '../../assets/Deck.css';
 
 const Deck = ({ remainingCards, trumpCard }) => {
   return (

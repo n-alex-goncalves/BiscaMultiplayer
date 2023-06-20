@@ -7,6 +7,8 @@ This is a web-based multiplayer implementation of the Bisca Portuguese card tric
 - User-friendly interface with intuitive game mechanics.
 - Score tracking with in-game card history.
 
+Website: https://bisca-multiplayer.up.railway.app/
+
 ## Table of Contents
 - [Demo](#demo)
 - [Overview](#overview)
@@ -21,6 +23,14 @@ This is a web-based multiplayer implementation of the Bisca Portuguese card tric
 
 ## Demo
 
+### Gameboard Demo
+
+![](demoGif.gif)
+
+### Menu Demo
+
+![](demoGifMenu.gif)
+
 ## Overview
 Bisca is a Portuguse card game that focuses on winning card-tricks. The game
 is popular in many countries, such as Portugal, Spain, Italy, Cape Verde, Angola, etc. The game is similar to its Italian equivalent, Briscola.
@@ -34,7 +44,7 @@ The implementation provided is a complete online equivalent of the game, allowin
 
 ## Installation
 
-### RUNNING LOCALLY
+### Running locally
 
 1. Make sure you have the necessary dependencies and packages installed. Run the following command to install the dependencies: npm install. Update npm by running the following command: npm install -g npm
 1. In the `CreateGameForm.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (case-sensitive, for some odd reason cloud deployment requires the PNG extension to be in full uppercase).
@@ -42,7 +52,7 @@ The implementation provided is a complete online equivalent of the game, allowin
 3. Open the terminal and type the following command to start the code: npm run start.
 4. Open your web browser and access the project at `localhost:3000` address.
 
-### RUNNING ON CLOUD (HEROKU, RENDER, ETC.)
+### Running on cloud (Heroku, Render, etc.)
 
 1. Make sure you have the necessary dependencies and packages installed. Run the following command to install the dependencies: npm install. Update npm by running the following command: npm install -g npm.
 2. Open the terminal and type the following command to create a fresh build for deployment: npm run build.
