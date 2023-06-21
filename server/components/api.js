@@ -109,16 +109,11 @@ const calculateTrickPoints = (cards, trumpSuit) => {
             }
         } else if (currentCard.suit === trumpSuit) {
             winningCard = currentCard;
-        } else if (winningCard.suit !== trumpSuit) {
-            if (currentCard.suit === cards[0].suit && getFaceNumber(currentCard) > getFaceNumber(winningCard)) {
-                winningCard = currentCard;
-            }   
         }
         total += getPoints(currentCard);
     }
     return { winnerID: winningCard.cardOwnership, points: total };
-  };
-  
+};
   
 const getPoints = (card) => {
     switch (card.value) {

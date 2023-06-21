@@ -35,6 +35,8 @@ const CardComponent = ({ cardData, exitAnimation, onClick, initial, enableRotati
 const Card = ({ cardID, cardData, exitAnimation = {}, onClick = () => {}, animateFrom = 'deck', enableRotation = false }) => {
   const initial = { x: 0, y: 0, rotate: enableRotation ? 90 : 0 }
 
+  console.log(animateFrom);
+  
   const initialPosition = () => {
       const originElement = document.getElementById(animateFrom); 
       const cardElement = document.getElementById(cardID);

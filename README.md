@@ -1,6 +1,6 @@
 # Bisca Portuguese Card Trick Game
 
-This is a web-based multiplayer implementation of the Bisca Portuguese card trick game.
+This is a simple web-based multiplayer implementation of the Bisca Portuguese card trick game.
 
 - Real-time gameplay with interactive animations using Framer Motion.
 - Dynamic deck of cards rendered from the Deck of Cards API.
@@ -44,33 +44,33 @@ The implementation provided is a complete online equivalent of the game, allowin
 
 ## Installation
 
-### Running locally
+### Running Locally
 
-1. Make sure you have the necessary dependencies and packages installed. Run the following command to install the dependencies: npm install. Update npm by running the following command: npm install -g npm
-1. In the `CreateGameForm.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (case-sensitive, for some odd reason cloud deployment requires the PNG extension to be in full uppercase).
+1. Install all necessary dependencies and packages with the following command: `npm install`. Update npm globally by running the following command: `npm install -g npm`.
+1. In the `CreateGameForm.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (case-sensitive, for some odd reason cloud deployment requires the extension to be in uppercase).
 2. Open the `server.js` file and uncomment the code for local deployment. Comment out all other code outside of the local deployment code.
-3. Open the terminal and type the following command to start the code: npm run start.
-4. Open your web browser and access the project at `localhost:3000` address.
+3. Open the terminal and type the following command to start the server: npm run start.
+4. Open your web browser and access the project at `https://localhost:3000` address.
 
-### Running on cloud (Heroku, Render, etc.)
+### Running on Cloud (Heroku, Render, Etc.)
 
-1. Make sure you have the necessary dependencies and packages installed. Run the following command to install the dependencies: npm install. Update npm by running the following command: npm install -g npm.
-2. Open the terminal and type the following command to create a fresh build for deployment: npm run build.
-3. In your cloud platform (Heroku, Render, etc.) replace the default build command with the following: npm install; npm run build.
-4. In your cloud platform, replace the default start command with the following: npm run start: server.
+1. Install all necessary dependencies and packages with the following command: `npm install`. Update npm globally by running the following command: `npm install -g npm`.
+2. Open the terminal and type the following command to create a fresh build for deployment:  `npm run build`.
+3. In your cloud platform (Heroku, Render, etc.), replace the default build command with the following:  `npm install; npm run build `.
+4. In your cloud platform, replace the default start command with the following: `npm run start:server`.
 5. Once deployed, open your web browser and access the project at the default domain address given by the cloud platform.
 
 ## Technologies Used
-- Node.js: An open-source JavaScript runtime environment.
-- React: A popular JavaScript library for building user interfaces.
-- React Bootstrap: A front-end framework that replaces Bootstrap JavaScript
-- Framer Motion: A powerful animation library for React.
-- Deck of Cards API: An API that provides a deck of cards for use in web applications.
+- **Node.js**: An open-source JavaScript runtime environment.
+- **React**: A popular JavaScript library for building user interfaces.
+- **React Bootstrap**: A front-end framework that replaces Bootstrap JavaScript
+- **Framer Motion**: A powerful animation library for React.
+- **Deck of Cards API**: An API that provides a deck of cards for use in web applications.
 
 ## Acknowledgements
-- font-awesome: An icon library toolkit for CSS
-- oombi: A well-designed multiplayer game that inspired this project
-- freepd: Free-public domain music used for the background. The track used for the project was "Martini Sunset". (The music can be found at: https://freepd.com/misc.php)
+- **font-awesome**: An icon library toolkit for CSS
+- **oombi**: A well-designed multiplayer game that inspired this project
+- **freepd**: Free-public domain music used for the background. The track used for the project was "Martini Sunset". (The music can be found at: https://freepd.com/misc.php)
 
 ## Areas for Improvement
 - [X] Animate the waiting page.
@@ -80,12 +80,11 @@ The implementation provided is a complete online equivalent of the game, allowin
 - [X] Implement an end animation that moves the card trick towards the winning player.
 - [X] Fix a mismatch between the client's perception and the received game state when clicking a card too fast.
 - [X] Replace the cloud platform Render with Railway.app to prevent spin down during momemnts of inactivity. 
-- [ ] Add sound effects for card draw and card placement
-- [ ] Handle disconnects and allow the disconnecting player to return after a set period.
-- [ ] Make the opponent's state private in the gamestate.
-- [ ] Preload the api images for faster load times.
-- [ ] Add a dark-mode feature.
+- [ ] Add sound effects for card draw and card placement.
+- [ ] Handle disconnects and allow the disconnecting player to return to a game after a set period.
+- [ ] Preload the API images for the top cards on the deck for faster load times.
+- [ ] Add a toggle on the main page for a light-mode/dark-mode feature
 - [ ] Implement a CPU opponent for single-player interaction.
-- [ ] Improve the CSS of the end-game info card.
 - [ ] Add a three-player, four-player mode (including the team variant of Bisca).
-- [ ] Clean up code (in general)
+- [ ] Clean up the code in general, remove deprecated packages, make the code more user-readable.
+- [ ] Implement a useEffect when moving the cards to a new location, rather than calling the function continuously. 

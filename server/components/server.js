@@ -177,11 +177,11 @@ io.on('connection', (socket) => {
     newPlayers[socket.id] = { ...newPlayers[socket.id], hand: newHand };
 
     const newTrick = [...gameState.board.currentTrick];
-    newTrick[currentTurnIndex] = { ...card, index: index };
+    newTrick[newTrick.findIndex((element) => element === null)] = { ...card, index };
 
     let newTrumpCard = gameState.board.trumpCard;
     let newRemainingCards = gameState.board.remainingCards;
-    let newTurnIndex = (newTrick.every((card) => card !== null)) ? gameState.currentTurnIndex : (gameState.currentTurnIndex + 1) % Object.keys(gameState.players).length;
+    let newTurnIndex = (newTrick.every((card) => card !== null)) ? currentTurnIndex : (currentTurnIndex + 1) % Object.keys(gameState.players).length;
 
     const ongoingBoardState = {
       ...boardState,

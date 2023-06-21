@@ -9,8 +9,10 @@ import '../assets/WaitingPage.scss';
 import socket from '../socket.js';
 
 const WaitingPage = () => {
-  const { roomID } = useParams();
+
   const navigate = useNavigate();
+
+  const { roomID } = useParams();
   const [showCopyMessage, setShowCopyMessage] = useState(false);
 
   const location = useLocation();
@@ -18,13 +20,9 @@ const WaitingPage = () => {
   const name = location.state;
 
   useEffect(() => {
-    // Listen for the startGame event from the server
     socket.emit('onPlayerReady', { name: name });
-    socket.on('startGameSession', () => {
-      console.log('Client received startGameResponse');
-      navigate(`/game/${roomID}`);
-    });
-    // Clean up the event listener when the component unmounts
+    socket.on('startGameSession', () => { navigate(`/game/${roomID}`) });
+
     return () => {
       socket.off('startGameSession');
     };

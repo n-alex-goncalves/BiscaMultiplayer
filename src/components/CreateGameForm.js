@@ -10,18 +10,35 @@ import bisca_point_img from '../img/bisca_point_system.png'
 import socket from '../socket.js';
 
 const CreateGameForm = () => {
+
+  const navigate = useNavigate();
+  
   const [name, setName] = useState('');
   const [gameID, setGameID] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showHelpMessage, setShowHelpMessage] = useState(false);
 
-  const navigate = useNavigate();
-
+  // Toggle the visibility of the help message
   const handleHelpMessage = () => {
     setShowHelpMessage(!showHelpMessage);
   };
 
+  // Game title
+  const GameTitle = () => {
+    return (
+      <motion.div
+        className="create-game-form-title"
+        initial={{ scale: 0 }}
+        animate={{ rotate: 360, scale: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 17 }}
+      >
+        BISCA!
+      </motion.div>
+    )
+  }
+
+  // Handle receiving the response for create room and join room
   useEffect(() => {
     socket.on('createRoomResponse', (response) => {
       if (response.success) {
@@ -37,11 +54,12 @@ const CreateGameForm = () => {
         const roomID = response.gameID;
         navigate(`/waiting/${roomID}`, { state: name });
       } else {
+        setErrorMessage('Game room does not exist.');
         setShowErrorMessage(true);
         setTimeout(() => { setShowErrorMessage(false); }, 2500);
         console.error(response.error);
       }
-    }, [name]);
+    });
 
     return () => {
       socket.off('createRoomResponse');
@@ -49,6 +67,8 @@ const CreateGameForm = () => {
     };
   });
 
+
+  // Handle the response for creating a room
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (name.trim() === '') {
@@ -57,8 +77,8 @@ const CreateGameForm = () => {
       setTimeout(() => { setShowErrorMessage(false); }, 2500);
       return;
     }
+
     socket.emit('createGameRoom', (response) => {
-      console.log('Client received callback function');
       if (response.success) {
         const roomID = response.gameID;
         navigate(`/waiting/${roomID}`, { state: name });
@@ -69,24 +89,18 @@ const CreateGameForm = () => {
     });
   };
 
+
+  // Handle the response for joining a room
   const handleGameCode = async (event) => {
     event.preventDefault();
-    if (name.trim() === '') {
-      setErrorMessage('Please enter a valid name.');
-      setShowErrorMessage(true);
-      setTimeout(() => { setShowErrorMessage(false); }, 2500);
-      return;
-    }
-
-    if (gameID.trim() === '') {
-      setErrorMessage('Please enter a valid game code.');
+    if (name.trim() === '' && gameID.trim() === '') {
+      setErrorMessage('Please enter a valid name/game code.');
       setShowErrorMessage(true);
       setTimeout(() => { setShowErrorMessage(false); }, 2500);
       return;
     }
 
     socket.emit('joinGameRoom', ({ gameID: gameID }), (response) => {
-      console.log('Client received callback function');
       if (response.success) {
         navigate(`/waiting/${gameID}`, { state: name });
       } else {
@@ -96,55 +110,32 @@ const CreateGameForm = () => {
         console.error(response.error);
       }
     })
-
   };
-
-  const GameTitle = () => {
-    return (
-      <motion.div
-        className="titleContainer"
-        initial={{ scale: 0 }}
-        animate={{ rotate: 360, scale: 1 }}
-        style={{ fontSize: '3rem', marginBottom: '35px', fontWeight: 'bold', fontFamily: "Helvetica, sans-serif" }}
-        transition={{ type: "spring", stiffness: 200, damping: 17 }}
-      >
-        BISCA!
-      </motion.div>
-    )
-  }
   
+  // Accordion menu with its items
   const AccordionMenu = () => {
     const accordionItems = [
       {
         title: 'INTRODUCTION',
-        content: `<strong>Bisca</strong> is a popular card game that originated in <b>Portugal</b> and is played in many other countries such as Spain, Italy, Cape Verde, Angola, etc. The game is similar to the Italian Briscola or the Spanish Brisca.
-        <br><br>
-        Some variations of Bisca can be played in teams between 4 people, but in this case, the website only hosts the two player version.
-        <br><br>
-        The origins of <b>Bisca</b> are uncertain, but it is believed to have evolved from the earlier Italian card game, <b>Briscola</b>, during a period of cultural exchange between the two countires.
-        <br><br>
+        content: `<strong>Bisca</strong> is a popular card game that originated in <b>Portugal</b> and is played in many other countries such as Spain, Italy, Cape Verde, Angola, etc. The game is similar to the Italian Briscola or the Spanish Brisca.<br><br>
+        Some variations of Bisca can be played in teams between 4 people, but in this case, the website only hosts the two player version.<br><br>
+        The origins of <b>Bisca</b> are uncertain, but it is believed to have evolved from the earlier Italian card game, <b>Briscola</b>, during a period of cultural exchange between the two countires.<br><br>
         Bisca is played with a 40 card-deck, and the aim is to achieve as many points from card tricks as possible. How the game works is described in the following sections.`
       },
       {
         title: 'PLAYERS AND CARDS',
-        content: `Each player draws <b>three</b> cards from the deck, and <b>one</b> additional card is drawn as the <b>trump card</b> at the centre of the board.
-        <br><br>
-        The <b>trump card</b> determines the suit that can win any trick. This means that if you play a card of the same suit as the trump card (and your opponent does not), you win the trick.
-        <br><br>
-        If both players play cards of the same suit, the player with the <b>highest</b> value card of that suit wins the trick (note that this happens if both players play the suit of the trump card).
-        <br><br>
-        If neither player plays a card of the trump suit, and both players play cards of different suits, the first player who played a card wins the trick.
-        <br><br>
+        content: `Each player draws <b>three</b> cards from the deck, and <b>one</b> additional card is drawn as the <b>trump card</b> at the centre of the board.<br><br>
+        The <b>trump card</b> determines the suit that can win any trick. This means that if you play a card of the same suit as the trump card (and your opponent does not), you win the trick.<br><br>
+        If both players play cards of the same suit, the player with the <b>highest</b> value card of that suit wins the trick (note that this happens if both players play the suit of the trump card).<br><br>
+        If neither player plays a card of the trump suit, and both players play cards of different suits, the first player who played a card wins the trick.<br><br>
         The points system for the game is shown above.`,
         image: bisca_point_img,
       },
       {
         title: 'TACTICS',
         content: `Here are a couple of tactics to secure some wins.<br><br>
-        1. <b>Keep track of the played cards:</b> Keeping track of the cards is crucial in Bisca. By remembering the cards played, you can better estimate the cards that the opponent has. Try to remember the high-ranking cards, especially the Ace and 7. Save those cards in your hand for key moments.
-        <br><br>
-        2. <b>Keep a balanced hand:</b> Keeping a balanced hand of different values/suits allows you to adapt to different situations and play strategically, regardless of whether you're losing or winning. Avoid having too many high-ranking cards or too many low-ranking cards, as this will limit your options.
-        <br><br>
+        1. <b>Keep track of the played cards:</b> Keeping track of the cards is crucial in Bisca. By remembering the cards played, you can better estimate the cards that the opponent has. Try to remember the high-ranking cards, especially the Ace and 7. Save those cards in your hand for key moments.<br><br>
+        2. <b>Keep a balanced hand:</b> Keeping a balanced hand of different values/suits allows you to adapt to different situations and play strategically, regardless of whether you're losing or winning. Avoid having too many high-ranking cards or too many low-ranking cards, as this will limit your options.<br><br>
         3. <b>Use the Monte Carlo strategy:</b> This tactic is a little more complicated, but generally, by playing the value of the last card played, or the mean value of the cards played so far, the player has a greater probability of winning. By taking into account the previous cards played via an average, you can better estimate what cards to play and what cards you can win.`,
       },
       {
@@ -157,7 +148,7 @@ const CreateGameForm = () => {
         - <b>Framer Motion</b>: A powerful animation library for React.<br>
         - <b>Deck of Cards API</b>: An API that provides a deck of cards objects.<br>
         - <b>font-awesome</b>: An icon library toolkit for CSS.<br>
-        - <b>oombi.io</b>: A well-designed multiplayer game that inspired this project.<br>`
+        - <b>oombi.io</b>: A well-designed multiplayer game that inspired this project.`
       }
     ];
 
@@ -172,10 +163,9 @@ const CreateGameForm = () => {
                 {item.title}      
               </Accordion.Header>
               <Accordion.Body>
-                {item.image && 
-                <div class="float-start mr-5">
+                {item.image && <div class="float-start mr-5">
                   <Image style={{ maxWidth: "400px", marginRight: "18px", border: "2px solid black"}} src={item.image}></Image>
-                  </div>}
+                </div>}
                 <p class="text-start" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.content)}}></p>
               </Accordion.Body>
             </Accordion.Item>
@@ -191,38 +181,25 @@ const CreateGameForm = () => {
       <motion.div
         initial={{ opacity: 0, scale: 1 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{
-          duration: 0.5
-        }}
+        transition={{ duration: 0.5 }}
       > 
         <Form onSubmit={handleSubmit} style={{ maxWidth: '200px' }}>
           <Form.Group className="mb-2 text-left">
             <Form.Label className="create-game-form-label float-start">Player Name:</Form.Label>
-            <div></div>
             <Form.Control type="text" value={name} onChange={(event) => setName(event.target.value)} className="create-game-form-input" id="name" placeholder="e.g., John" />
           </Form.Group>
-          <Button className="mb-3 mb-sm-6 create-game-form-button" type="submit">
-            CREATE GAME
-          </Button>
+          <Button className="mb-3 mb-sm-6 create-game-form-button" type="submit">CREATE GAME</Button>
         </Form>
-
-        <Form onSubmit={handleGameCode} style={{ maxWidth: '200px'}}>
+        <Form onSubmit={handleGameCode} style={{ maxWidth: '200px' }}>
           <Form.Group className="mb-2 mb-sm-5 text-left">
             <Form.Label className="create-game-form-label float-start">Game Code:</Form.Label>
-            <div></div>
             <Form.Control type="text" value={gameID} onChange={(event) => setGameID(event.target.value)} className="create-game-form-input" id="gameID" placeholder="e.g., zdh3fj" />
           </Form.Group>
-          <Button className="mb-3 btn join-game-form-button" type="submit">
-            JOIN VIA CODE
-          </Button>
+          <Button className="mb-3 btn join-game-form-button" type="submit">JOIN VIA CODE</Button>
         </Form>
-
         <Form onClick={handleHelpMessage}>
-          <Button className="mb-3 help-game-form-button" type="button">
-            HOW TO PLAY
-          </Button>
+          <Button className="mb-3 help-game-form-button" type="button">HOW TO PLAY</Button>
         </Form>
-        
         <AnimatePresence>
           {showHelpMessage && (
             <motion.div
@@ -236,7 +213,6 @@ const CreateGameForm = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
         {showErrorMessage && (<div className="notification-alert notification-alert--error">{errorMessage}</div>)}
       </motion.div>
     </Container>
