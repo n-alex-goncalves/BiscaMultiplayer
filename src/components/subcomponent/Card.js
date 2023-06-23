@@ -2,7 +2,7 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardContainer } from '../Layout.js';
 
-import placeholder_img from './placeholder_green.PNG'
+import placeholder_img from './placeholder_green.png'
 
 const Placeholder = () => (
   <CardContainer style={{ zIndex: -1, position: 'relative' }}>
