@@ -19,7 +19,7 @@ const initializeGame = async (gameState) => {
     gameState.board.deckID = deckID;
     gameState.board.trumpCard = trumpCard.cards[0];
     gameState.turnOrder = playerSockets;
-}
+};
 
 
 const createGameState = (gameID) => {
@@ -73,17 +73,17 @@ const createDeckID = async () => {
     return data;
 };
 
-
 const Draw = async (deckID, count, socketID = null) => {
     const { data: response }  = await api.get(`${deckID}/draw/`, {
         params: {
             count: count
         }
     })
-    for (const card of response.cards) {
-        card.cardOwnership = socketID;
-        card.isVisible = true;
-    }
+    response.cards = response.cards.map(card => ({
+        ...card,
+        cardOwnership: socketID,
+        isVisible: true
+    }));
     return response;
 };
 
@@ -114,7 +114,55 @@ const calculateTrickPoints = (cards, trumpSuit) => {
     }
     return { winnerID: winningCard.cardOwnership, points: total };
 };
+
+
+const updateGameState = async (gameID, deckID, ongoingGameState, ongoingBoardState) => {
+    let { players: newPlayers } = ongoingGameState;
+    let { trumpCard, currentTrick: newTrick, remainingCards: newRemainingCards } = ongoingBoardState
+    const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
+
+    newPlayers[winnerID] = {
+      ...newPlayers[winnerID],
+      score: newPlayers[winnerID].score + points,
+      cardsWon: newPlayers[winnerID].cardsWon.concat(newTrick)
+    };
   
+    const winnerIndex = Object.entries(newPlayers).findIndex(([playerID]) => playerID === winnerID);
+    const playersArray = Object.entries(newPlayers);
+    const reorderedPlayers = playersArray.slice(winnerIndex).concat(playersArray.slice(0, winnerIndex));
+    let nullIndex;
+
+    for (const [playerID, newPlayer] of reorderedPlayers) {
+      nullIndex = newPlayer.hand.findIndex(card => card === null);
+      if (newRemainingCards === 0 && trumpCard?.isVisible === true) {
+        await Return(deckID, [trumpCard.code]);
+        trumpCard.isVisible = false;
+      }
+      if (nullIndex !== -1) {
+        const response = await Draw(deckID, 1, playerID);    
+        newRemainingCards = response.remaining;
+        newPlayer.hand[nullIndex] = response.cards[0];
+      }
+    }
+
+    const completeBoardState = {
+        deckID: deckID,
+        trumpCard: trumpCard,
+        remainingCards: newRemainingCards,
+        currentTrick: [null, null]
+    };
+        
+    const completeGameState = {
+        ...ongoingGameState,
+        board: completeBoardState,
+        players: newPlayers,
+        currentTurnIndex: null
+    };
+
+    return { completeGameState: completeGameState, winnerID: winnerID };
+};
+
+
 const getPoints = (card) => {
     switch (card.value) {
         case "ACE":
@@ -131,6 +179,7 @@ const getPoints = (card) => {
             return 0;
     }
 };
+
 
 const getFaceNumber = (card) => {
     switch (card.value) {
@@ -151,4 +200,4 @@ const getFaceNumber = (card) => {
 
 
 
-module.exports = { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return }
+module.exports = { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return, updateGameState }

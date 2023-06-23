@@ -1,4 +1,4 @@
-const { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return } = require('./api.js');
+const { initializeGame, createGameState, createPlayerState, calculateTrickPoints, Draw, Return, updateGameState } = require('./api.js');
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
@@ -12,6 +12,12 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const server = http.createServer(app);
+
+const io = require('socket.io')(server, { 
+  cors: { origin: "*" }
+});
+
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, '../build')));
 
@@ -23,6 +29,7 @@ app.use(express.static('build', {
   }
 }));
 
+// Define a route that serves static JS files
 app.use('/static/js', express.static(path.join(__dirname, '../build/static/js'), {
   setHeaders: function (res, path) {
     if (path.endsWith('.js')) {
@@ -56,24 +63,31 @@ app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, '../../build', 'index.html'));
 });
 
-const server = http.createServer(app);
+// Delays code by a specificed amount (in miliseconds)
+const delay = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+};
 
-/*
-const io = require('socket.io')(server, { 
-  cors: { 
-    origin: ["*", "*:*", "https://bisca-multiplayer.onrender.com", "https://bisca-multiplayer.onrender.com:*", 'https://bisca-multiplayer.onrender.com:8000']
-  }
-});
-*/
+// Sends two updates of game state to each client; an ongoing game state (for animation) and then the final complete game state
+const sendUpdate = async (gameID, deckID, gameState, ongoingGameState, ongoingBoardState) => {
+  const { completeGameState, winnerID } = await updateGameState(gameID, deckID, ongoingGameState, ongoingBoardState);
+  games[gameID] = { ...completeGameState, currentTurnIndex: gameState.turnOrder.indexOf(winnerID) };
 
-const io = require('socket.io')(server, { 
-  cors: { origin: "*" }
-});
+  io.to(gameID).emit('getGameStateResponse', { gameState: { ...ongoingGameState,  currentTurnIndex: gameState.turnOrder.indexOf(winnerID) }, success: true });        
+  io.to(gameID).emit('getGameStateResponse', { gameState: { ...completeGameState, currentTurnIndex: gameState.turnOrder.indexOf(winnerID) }, success: true });
+
+  // Check if all players have empty hands and emit event for winning state if applicable
+  if (Object.values(completeGameState.players).every(player => player.hand?.every(card => card == null))) {
+    io.to(gameID).emit('getWinningStateResponse', { gameState: { ...completeGameState, currentTurnIndex: gameState.turnOrder.indexOf(winnerID) }, success: true });
+  };
+}
 
 const games = {};
 const socketToGameMap = {};
 
-// Event handler for new socket connection
+// IO handler for new socket connection
 io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected.`);
 
@@ -155,17 +169,17 @@ io.on('connection', (socket) => {
     socket.emit("getGameStateResponse", { gameState: gameState, success: true });
   });
 
-  // Event handler for when a card is selected
+  // Event handler for when a client selects a card
   socket.on("onCardSelected", async (data) => {
     const { card, index, gameID } = data;
     
     const gameState = games[gameID];
     const boardState = gameState.board;
-    const deckID = gameState.board.deckID;
+    const deckID = boardState.deckID;
     const currentTurnIndex = gameState.currentTurnIndex;
     const socketPlayerIndex = gameState.turnOrder.indexOf(socket.id);
 
-    if (socketPlayerIndex !== gameState.currentTurnIndex || gameState.board.currentTrick.every((card) => card !== null)) {
+    if (socketPlayerIndex !== gameState.currentTurnIndex || boardState.currentTrick.every((card) => card !== null)) {
       console.error('ERROR NOT PLAYER TURN')
       return;
     }
@@ -176,16 +190,16 @@ io.on('connection', (socket) => {
     const newPlayers = { ...gameState.players };
     newPlayers[socket.id] = { ...newPlayers[socket.id], hand: newHand };
 
-    const newTrick = [...gameState.board.currentTrick];
+    const newTrick = [...boardState.currentTrick];
     newTrick[newTrick.findIndex((element) => element === null)] = { ...card, index };
 
-    let newTrumpCard = gameState.board.trumpCard;
-    let newRemainingCards = gameState.board.remainingCards;
-    let newTurnIndex = (newTrick.every((card) => card !== null)) ? currentTurnIndex : (currentTurnIndex + 1) % Object.keys(gameState.players).length;
+    const trumpCard = boardState.trumpCard;
+    const newRemainingCards = boardState.remainingCards;
+    const newTurnIndex = (newTrick.every((card) => card !== null)) ? currentTurnIndex : (currentTurnIndex + 1) % Object.keys(gameState.players).length;
 
     const ongoingBoardState = {
-      ...boardState,
-      trumpCard: newTrumpCard,
+      deckID: deckID,
+      trumpCard: trumpCard,
       remainingCards: newRemainingCards,
       currentTrick: newTrick
     }
@@ -196,77 +210,13 @@ io.on('connection', (socket) => {
       players: newPlayers,
       currentTurnIndex: newTurnIndex
     }
-
+    
     games[gameID] = ongoingGameState;
     io.to(gameID).emit('getGameStateResponse', { gameState: ongoingGameState, success: true });
 
     if (newTrick.every((card) => card !== null)) {      
-      const delay = (ms) => {
-        return new Promise((resolve) => {
-          setTimeout(resolve, ms);
-        });
-      };
-
-      const updateGameState = async () => {
-        const trumpCard = newTrumpCard;
-        const { winnerID, points } = calculateTrickPoints(newTrick, trumpCard.suit);
-        
-        newPlayers[winnerID] = {
-          ...newPlayers[winnerID],
-          score: newPlayers[winnerID].score + points,
-          cardsWon: newPlayers[winnerID].cardsWon.concat(newTrick)
-        };
-      
-        const winnerIndex = Object.entries(newPlayers).findIndex(([playerID]) => playerID === winnerID);
-        const playersArray = Object.entries(newPlayers);
-        const reorderedPlayers = playersArray.slice(winnerIndex).concat(playersArray.slice(0, winnerIndex));
-        let nullIndex;
-
-        // For each player, draw a new card
-        for (const [playerID, newPlayer] of reorderedPlayers) {
-          nullIndex = newPlayer.hand.findIndex(card => card === null);
-          if (newRemainingCards === 0 && newTrumpCard?.isVisible === true) {
-            await Return(deckID, [newTrumpCard.code]);
-            newTrumpCard.isVisible = false;
-          }
-          if (nullIndex !== -1) {
-            const response = await Draw(deckID, 1, playerID);    
-            newRemainingCards = response.remaining;
-            newPlayer.hand[nullIndex] = response.cards[0];
-          }
-        }
-      
-        newTurnIndex = gameState.turnOrder.indexOf(winnerID);
-        
-        io.to(gameID).emit('getGameStateResponse', { gameState: { ...ongoingGameState, currentTurnIndex: newTurnIndex }, success: true });
-  
-        newTrick.fill(null);
-
-        const completeBoardState = {
-          ...ongoingBoardState,
-          trumpCard: newTrumpCard,
-          remainingCards: newRemainingCards,
-          currentTrick: newTrick
-        };
-        
-        const completeGameState = {
-          ...ongoingGameState,
-          board: completeBoardState,
-          players: newPlayers,
-          currentTurnIndex: newTurnIndex
-        };
-        
-        games[gameID] = completeGameState;
-        io.to(gameID).emit('getGameStateResponse', { gameState: completeGameState, success: true });
-        
-        if (Object.values(completeGameState.players).every(player => player.hand?.every(card => card == null))) {
-          io.to(gameID).emit('getWinningStateResponse', { gameState: completeGameState, winner: socket.id, success: true });
-          return;
-        }
-      };      
- 
       await delay(1500);
-      await updateGameState();
+      await sendUpdate(gameID, deckID, gameState, ongoingGameState, ongoingBoardState);
     }
   });
 

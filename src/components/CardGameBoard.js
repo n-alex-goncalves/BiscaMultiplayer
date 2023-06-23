@@ -33,7 +33,7 @@ const CardGameBoard = () => {
     const [trumpCard, setTrumpCard] = useState(null);
     const [remainingCards, setRemainingCards] = useState(null);
     const [currentTrick, setCurrentTrick] = useState([null, null]); 
-    const [turnStatus, setTurnStatus] = useState(null);
+    const [turnStatus, setTurnStatus] = useState(false);
     const [isGameEnd, setIsGameEnd] = useState(false);
 
     useEffect(() => {
@@ -62,27 +62,27 @@ const CardGameBoard = () => {
                 const remainingCards = gameState.board.remainingCards; 
                 const trumpCard = gameState.board.trumpCard;
                 const currentTrick = gameState.board.currentTrick;
-                const turnStatus = gameState?.turnOrder[gameState?.currentTurnIndex] === socket.id ? 'YourTurn' : 'OpponentTurn';
+                const turnStatus = gameState?.turnOrder[gameState?.currentTurnIndex] === socket.id;
                 setTrumpCard(trumpCard);
                 setRemainingCards(remainingCards);
                 setCurrentTrick(currentTrick);
                 setTurnStatus(turnStatus);
             }
+        });
 
-            socket.on('getWinningStateResponse', (response) => { 
-                if (response.success) {
-                    const { gameState } = response;
-                    const playerState = gameState.players[socket.id];
-                    setPlayerState(playerState)
+        socket.on('getWinningStateResponse', (response) => { 
+            if (response.success) {
+                const { gameState } = response;
+                const playerState = gameState.players[socket.id];
+                setPlayerState(playerState)
 
-                    const opponentID = Object.keys(gameState.players).find(id => id !== socket.id);
-                    const opponentState = gameState.players[opponentID];
-                    setOpponentState(opponentState)
-                    setIsGameEnd(true);
+                const opponentID = Object.keys(gameState.players).find(id => id !== socket.id);
+                const opponentState = gameState.players[opponentID];
+                setOpponentState(opponentState)
+                setIsGameEnd(true);
 
-                    socket.emit('gameEnd', {});
-                }
-            });
+                socket.emit('gameEnd', {});
+            }
         });
         
         return () => {
@@ -123,7 +123,7 @@ const CardGameBoard = () => {
                                                         <Card 
                                                             cardID={`current-trick-card-${index+1}`}
                                                             cardData={data}
-                                                            exitAnimation={{ scale: 1, opacity: 1, y: turnStatus === 'YourTurn' ? '100vh' : '-100vh' }}
+                                                            exitAnimation={{ scale: 1, opacity: 1, y: turnStatus ? '150vh' : '-150vh' }}
                                                             animateFrom={data?.cardOwnership === socket?.id ? `player-card-${data?.index+1}` : `opponent-card-${data?.index+1}`}
                                                         ></Card>
                                                     </Col>
@@ -139,7 +139,7 @@ const CardGameBoard = () => {
                             <TurnStatus turnStatus={turnStatus}></TurnStatus>
                         </Col>
                     </Row>
-                    <PlayerComponent playerName={playerName} playerPoints={playerPoints} playerCards={playerCards} isPlayer={true}></PlayerComponent>
+                    <PlayerComponent playerName={playerName} playerPoints={playerPoints} playerCards={playerCards} isPlayer={true} isTurn={turnStatus}></PlayerComponent>
             </motion.div>
             </Layout>
         </Container>

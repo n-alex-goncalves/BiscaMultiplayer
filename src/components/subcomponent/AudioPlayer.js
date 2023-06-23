@@ -14,6 +14,7 @@ const AudioPlayer = ({ src }) => {
   const toggleAudio = () => {
     setIsPlaying(!isPlaying);
     if (!isPlaying) {
+      audioRef.current.volume = 0.4;
       audioRef.current.play();
     } else {
       audioRef.current.pause();

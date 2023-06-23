@@ -12,12 +12,8 @@ Website: https://bisca-multiplayer.up.railway.app/
 ## Table of Contents
 - [Demo](#demo)
 - [Overview](#overview)
-- [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Technologies Used](#technologies-used)
-- [Contributing](#contributing)
-- [License](#license)
 - [Acknowledgements](#acknowledgements)
 - [Areas of Improvement](#areas-for-improvement)
 
@@ -35,9 +31,6 @@ Website: https://bisca-multiplayer.up.railway.app/
 Bisca is a Portuguse card game that focuses on winning card-tricks. The game
 is popular in many countries, such as Portugal, Spain, Italy, Cape Verde, Angola, etc. The game is similar to its Italian equivalent, Briscola.
 
-The origins of Bisca are unclear, but it is believed to have originated from the Italian equivalent during a period of cultural exchange between the two countries 
-in the 16th century.
-
 The game starts with both players being dealt three cards, and one additional card being drawn as the trump card. 
 
 The implementation provided is a complete online equivalent of the game, allowing users to connect online and play against one another. The game features dynamic spring animation courtesy of Framer Motion, and the dynamic card renders courtesy of the Deck of Cards API.
@@ -46,19 +39,21 @@ The implementation provided is a complete online equivalent of the game, allowin
 
 ### Running Locally
 
-1. Install all necessary dependencies and packages with the following command: `npm install`. Update npm globally by running the following command: `npm install -g npm`.
-1. In the `CreateGameForm.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (case-sensitive, for some odd reason cloud deployment requires the extension to be in uppercase).
-2. Open the `server.js` file and uncomment the code for local deployment. Comment out all other code outside of the local deployment code.
-3. Open the terminal and type the following command to start the server: npm run start.
-4. Open your web browser and access the project at `https://localhost:3000` address.
+1. Install all necessary dependencies and packages with the following command: `npm install`. 
+2. Update npm globally by running the following command: `npm install -g npm`.
+3. In the `AccordionMenu.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (case-sensitive, for some odd reason cloud deployment requires the extension to be in uppercase).
+4. Open the `socket.js` file and uncomment the code for local deployment. Comment out all other code outside of the local deployment code.
+5. Open the terminal and type the following command to start the server: npm run start.
+6. Open your web browser and access the project at `https://localhost:3000` address.
 
 ### Running on Cloud (Heroku, Render, Etc.)
 
-1. Install all necessary dependencies and packages with the following command: `npm install`. Update npm globally by running the following command: `npm install -g npm`.
-2. Open the terminal and type the following command to create a fresh build for deployment:  `npm run build`.
-3. In your cloud platform (Heroku, Render, etc.), replace the default build command with the following:  `npm install; npm run build `.
-4. In your cloud platform, replace the default start command with the following: `npm run start:server`.
-5. Once deployed, open your web browser and access the project at the default domain address given by the cloud platform.
+1. Install all necessary dependencies and packages with the following command: `npm install`. 
+2. Update npm globally by running the following command: `npm install -g npm`.
+3. Open the terminal and type the following command to create a fresh build for deployment:  `npm run build`.
+4. In your cloud platform (Heroku, Render, etc.), replace the default build command with the following:  `npm install; npm run build `.
+5. In your cloud platform, replace the default start command with the following: `npm run start:server`.
+6. Once deployed, open your web browser and access the project at the default domain address given by the cloud platform.
 
 ## Technologies Used
 - **Node.js**: An open-source JavaScript runtime environment.
@@ -83,7 +78,6 @@ The implementation provided is a complete online equivalent of the game, allowin
 - [ ] Add sound effects for card draw and card placement.
 - [ ] Handle disconnects and allow the disconnecting player to return to a game after a set period.
 - [ ] Preload the API images for the top cards on the deck for faster load times.
-- [ ] Add a toggle on the main page for a light-mode/dark-mode feature
 - [ ] Implement a CPU opponent for single-player interaction.
 - [ ] Add a three-player, four-player mode (including the team variant of Bisca).
 - [ ] Clean up the code in general, remove deprecated packages, make the code more user-readable.

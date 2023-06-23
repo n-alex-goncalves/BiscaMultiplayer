@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const TurnStatus = ({ turnStatus }) => {
   const yourTurnClass = 'your-turn';
   const opponentTurnClass = 'opponent-turn';
-  const id = turnStatus === 'YourTurn' ? yourTurnClass : opponentTurnClass;
+  const id = turnStatus ? yourTurnClass : opponentTurnClass;
 
  const variants = {
     show: {

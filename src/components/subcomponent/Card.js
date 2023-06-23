@@ -2,7 +2,7 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CardContainer } from '../Layout.js';
 
-import placeholder_img from './placeholder_green.png'
+import placeholder_img from './placeholder_green.PNG'
 
 const Placeholder = () => (
   <CardContainer style={{ zIndex: -1, position: 'relative' }}>
@@ -13,7 +13,7 @@ const Placeholder = () => (
   </CardContainer>
 )
 
-const CardComponent = ({ cardData, exitAnimation, onClick, initial, enableRotation = false })  => {
+const CardComponent = ({ cardData, exitAnimation, onClick, initial, enableRotation = false, enableHover = false })  => {
   return (
     <motion.div
       style={{ zIndex: 1, position: 'relative' }}
@@ -22,20 +22,20 @@ const CardComponent = ({ cardData, exitAnimation, onClick, initial, enableRotati
       exit={exitAnimation}
       transition={{ type: "spring", bounce: 0.5, duration: 1 }}
     >
-      <CardContainer onClick={onClick}>
-        <motion.img
-            src={cardData.image}
-            style={{ width: "100%", height: "100%", scale: "cover" }}
-        />
-      </CardContainer>
+      <motion.div whileHover={ enableHover && { scale: 1.1 } }>
+        <CardContainer onClick={onClick}>
+          <motion.img
+              src={cardData.image}
+              style={{ width: "100%", height: "100%", scale: "cover" }}
+          />
+        </CardContainer>
+      </motion.div>
     </motion.div>
   )
 }
 
-const Card = ({ cardID, cardData, exitAnimation = {}, onClick = () => {}, animateFrom = 'deck', enableRotation = false }) => {
+const Card = ({ cardID, cardData, exitAnimation = {}, onClick = () => {}, animateFrom = 'deck', enableRotation = false, enableHover = false }) => {
   const initial = { x: 0, y: 0, rotate: enableRotation ? 90 : 0 }
-
-  console.log(animateFrom);
   
   const initialPosition = () => {
       const originElement = document.getElementById(animateFrom); 
@@ -62,7 +62,8 @@ const Card = ({ cardID, cardData, exitAnimation = {}, onClick = () => {}, animat
             exitAnimation={exitAnimation}
             initial={initial} 
             onClick={onClick} 
-            enableRotation={enableRotation}/>
+            enableRotation={enableRotation}
+            enableHover={enableHover}/>
           ) : (
             <Placeholder key={cardID + '-placeholder'}/>
         )}
