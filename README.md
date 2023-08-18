@@ -41,9 +41,9 @@ The implementation provided is a complete online equivalent of the game, allowin
 
 1. Install all necessary dependencies and packages with the following command: `npm install`. 
 2. Update npm globally by running the following command: `npm install -g npm`.
-3. In the `AccordionMenu.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (case-sensitive, for some odd reason cloud deployment requires the extension to be in uppercase).
+3. In the `AccordionMenu.js` and `Card.js` files, replace all instances of `.PNG` with `.png` (for some odd reason cloud deployment requires the extension to be in uppercase).
 4. Open the `socket.js` file and uncomment the code for local deployment. Comment out all other code outside of the local deployment code.
-5. Open the terminal and type the following command to start the server: npm run start.
+5. Open the terminal and type the following command to start the server: `npm run start`.
 6. Open your web browser and access the project at `https://localhost:3000` address.
 
 ### Running on Cloud (Heroku, Render, Etc.)
@@ -74,7 +74,8 @@ The implementation provided is a complete online equivalent of the game, allowin
 - [X] Implement a promise delay function to replace the timeout function in the server.
 - [X] Implement an end animation that moves the card trick towards the winning player.
 - [X] Fix a mismatch between the client's perception and the received game state when clicking a card too fast.
-- [X] Replace the cloud platform Render with Railway.app to prevent spin down during momemnts of inactivity. 
+- [X] Replace the cloud platform Render with Railway.app to prevent spin down during momemnts of inactivity.
+- [ ] Make the objects follow the SOLID principles. 
 - [ ] Add sound effects for card draw and card placement.
 - [ ] Handle disconnects and allow the disconnecting player to return to a game after a set period.
 - [ ] Preload the API images for the top cards on the deck for faster load times.
