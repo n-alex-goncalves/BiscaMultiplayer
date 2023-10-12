@@ -33,7 +33,7 @@ is popular in many countries, such as Portugal, Spain, Italy, Cape Verde, Angola
 
 The game starts with both players being dealt three cards, and one additional card being drawn as the trump card. 
 
-The implementation provided is a complete online equivalent of the game, allowing users to connect online and play against one another. The game features dynamic spring animation courtesy of Framer Motion, and the dynamic card renders courtesy of the Deck of Cards API.
+The implementation provided is a complete online equivalent of the game, allowing users to connect online and play against one another. The game features dynamic spring animation courtesy of Framer Motion, and dynamic card renders courtesy of the Deck of Cards API.
 
 ## Installation
 
