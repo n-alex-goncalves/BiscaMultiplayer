@@ -29,7 +29,7 @@ Website: https://bisca-multiplayer.up.railway.app/
 
 ## Overview
 Bisca is a Portuguse card game that focuses on winning card-tricks. The game
-is popular in many countries, such as Portugal, Spain, Italy, Cape Verde, Angola, etc. The game is similar to its Italian equivalent, Briscola.
+is popular in many countries, such as Portugal, Spain, Cape Verde, etc. The game is similar to its Italian equivalent, Briscola.
 
 The game starts with both players being dealt three cards, and one additional card being drawn as the trump card. 
 
